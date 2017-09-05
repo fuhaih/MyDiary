@@ -151,3 +151,10 @@ git remote add niuren giturl…
 git fetch niuren
 # 将牛人的远程更新合并到本地分支
 git merge niuren/master
+
+-----------------------------------------------------------------------------------------------------
+git 合并异常：
+The following untracked working tree files would be overwritten by merge
+
+git clean -d -fx
+删除没有被跟踪的文件
