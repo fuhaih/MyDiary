@@ -93,6 +93,45 @@ HEAD^是指把版本库复位到当前HEAD之前的那个节点上，把HEAD这�
     git reset --hard HEAD^ #强制复位前一个提交。
     git reset --hard HEAD~3 #强制复位到前第三个3提交
     git reset HEAD #可以用来清除已经add到缓存区但是不想进一步提交的内容。
+### **修改别人的项目**
+
+如果Fork别人的项目或者多人合作项目，最好每人都拥有一个独立分支，然后由项目维护人合并。如何建立自己的分支？
+
+* 分支的创建和合并
+
+    git branch yourbranch 
+
+    git checkout yourbranch  
+  
+    切换到yourbranch
+
+* 开发yourbranch分支，然后开发之后与master分支合并
+
+    git checkout master
+
+    git merge yourbranch
+
+    git branch -d yourbranch    
+
+    合并完后删除本地分支
+* 如何将牛人的远程分支更新到自己的本地分支？
+
+    查看当前项目下远程
+
+    git remote
+
+    增加新的分支链接，例如
+
+    git remote add niuren giturl…
+
+    获取牛人的远程更新
+
+    git fetch niuren
+
+    将牛人的远程更新合并到本地分支
+
+    git merge niuren/master
+
 ### **.gitignore(忽略某些文件)**
 格式：
 
