@@ -22,7 +22,7 @@ ShowingEditor方法
         }
 二、时间格式
 gridView1.Columns["F_Time"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
-gridView1.Columns["F_Time"].DisplayFormat.FormatString = "yyyy/MM/dd hh:mm:ss";
+gridView1.Columns["F_Time"].DisplayFormat.FormatString = "yyyy/MM/dd HH:mm:ss";
 
 三、符合条件行变色
         private void gridView1_RowCellStyle(object sender, DevExpress.XtraGrid.Views.Grid.RowCellStyleEventArgs e)
