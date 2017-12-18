@@ -2,6 +2,8 @@
 ## 原因
 jquery尚未支持HTML5 XMLHttpRequest Level 2的二进制流数据请求。
 ## 解决方案
+[github地址](https://github.com/henrya/js-jquery/tree/master/BinaryTransport)
+
 jquery 允许我们用 Ajax transportsa方法来自定义ajax请求
 ```javascript
  /**
