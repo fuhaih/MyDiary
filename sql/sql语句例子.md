@@ -1,6 +1,7 @@
 数据库表StudentGrade
+
 | stuId | subId| grade|
-|:------:  |:--:  |:---:|
+|:------:|:--: |:---: |
 |001       	|1	|97
 |001       	|2	|50
 |001       	|3	|70
@@ -68,6 +69,8 @@ SELECT [stuId]
 ```
 此表中的最高分是97分，如果只有一个97分，可以用order by来代替not exists来实现该需求，但是如果有多个97分，那么order by是满足不了需求的
 # 获取每个科目前两名
+## 情况1
+    排名并列，即存在多个第一第二
 ```sql
   --方法1
   --exists
@@ -78,8 +81,7 @@ SELECT [stuId]
   where exists(
 	select 1 from 
 	(
-		SELECT 
-	   count(1) counNum
+		SELECT count(DISTINCT t2.grade) counNum
 		FROM [Test].[dbo].[StudentGrade] t2
 		where t1.subId=t2.subId and t1.grade<=t2.grade
 	) t3
@@ -88,26 +90,13 @@ SELECT [stuId]
   order by t1.subId,t1.grade desc
 
   --方法2
-  --in
-  SELECT [stuId]
-      ,[subId]
-      ,[grade]
-  FROM [Test].[dbo].[StudentGrade] t1
-  where stuid in(
-	  SELECT top 2 stuid
-	  FROM [Test].[dbo].[StudentGrade] t2
-	  where t1.subid=t2.subid
-      order by t2.grade desc
-  )
-  order by subid,grade desc
-
-  --方法3
   select * from [Test].[dbo].[StudentGrade] t1
   where (
-	select count(1) from [Test].[dbo].[StudentGrade] 
+	select count(DISTINCT t2.grade) from [Test].[dbo].[StudentGrade] 
 	where subId=t1.subId and grade>=t1.grade
   )<=2
   order by subid,grade desc
 ```
+## 情况2
+    排名不并列，这个还是写程序去吧
 
-各个方法性能有待测试,如果前两名有重复（1、2名都不止一个），这几个方法还是不能用
