@@ -97,6 +97,7 @@ SELECT [stuId]
   )<=2
   order by subid,grade desc
 ```
+    两个方法的查询速度还有待研究
 ## 情况2
     排名不并列，这个还是写程序去吧
 
