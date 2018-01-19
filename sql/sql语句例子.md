@@ -41,6 +41,7 @@ GO
 
 # 获取每个学生成绩最高的科目
 ```sql
+  //包含重复项
   SELECT [stuId]
       ,[subId]
       ,[grade]
@@ -53,6 +54,17 @@ GO
 	  group by stuId 
 	) b
 	where a.stuId=b.stuId and a.grade=b.maxgrade
+  )
+
+  //根据学号分组，获取每个学生成绩最高的一条信息（只取每组一条）
+  SELECT [stuId]
+      ,[subId]
+      ,[grade]
+  FROM [Test].[dbo].[StudentGrade] a
+  where subId=(
+    select top 1 subId from [Test].[dbo].[StudentGrade] 
+	where a.stuId=stuId
+	order by grade desc
   )
 ```
 # 获取最高分数对应的学科和学生id
