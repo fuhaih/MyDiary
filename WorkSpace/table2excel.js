@@ -178,6 +178,10 @@ exclude_inputs：是否导出输入框中的内容。
 
             if ($.isArray(table)) {
                 for (i in table) {
+                    //去除一些自定义方法
+                    if (!table.hasOwnProperty(i)) {
+                        continue;
+                    } 
                     //fullTemplate += e.template.sheet.head + "{worksheet" + i + "}" + e.template.sheet.tail;
                     fullTemplate += e.template.sheet.head + sheetName + i + e.template.sheet.tail;
                 }
@@ -185,16 +189,32 @@ exclude_inputs：是否导出输入框中的内容。
 
             fullTemplate += e.template.mid;
 
+<<<<<<< Updated upstream
             if ($.isArray(table)) {
                 for (var i = 0; i < table.length;i++) {
                     fullTemplate += e.template.table.head + "{table" + i + "}" + e.template.table.tail;
+=======
+            if ( $.isArray(table) ) {
+                for (i in table) {
+                    if (!table.hasOwnProperty(i)) {
+                        continue;
+                    } 
+                    fullTemplate += e.template.table.head + table[i] + e.template.table.tail;
+>>>>>>> Stashed changes
                 }
             }
 
             fullTemplate += e.template.foot;
 
+<<<<<<< Updated upstream
             for (var i = 0; i < table.length;i++)
             {
+=======
+            for (i in table) {
+                if (!table.hasOwnProperty(i)) {
+                    continue;
+                } 
+>>>>>>> Stashed changes
                 e.ctx["table" + i] = table[i];
             }
             delete e.ctx.table;
