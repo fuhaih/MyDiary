@@ -6,6 +6,14 @@
 * GridFS可以实现文件自动同步到多台服务器
 
 GridFS不适用于原子级地更新整个文件的需求。
+
+## GridFS集合
+GridFS文件是存储在两个集合中的
+* chunks 存储文件字节数据 
+* files 存储文件的 metadata
+
+
+![示例图](https://github.com/fuhaih/MyDiary/blob/master/nosql/gridfs%E5%AD%98%E5%82%A8%E7%A4%BA%E6%84%8F%E5%9B%BE.png)
 ## 通过metadata进行检索
 ```csharp
 BasicDBObject query = new BasicDBObject("metadata.target_field", "abcdefg"));
