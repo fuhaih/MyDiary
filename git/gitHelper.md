@@ -90,9 +90,13 @@ HEAD^是指把版本库复位到当前HEAD之前的那个节点上，把HEAD这�
 
 540ecb7~3是指要复位到540ecb7之前的三个节点上，即把该提交和之前的两个提交（共三个提交）扔到工作目录树中。
 
-    git reset --hard HEAD^ #强制复位前一个提交。
+    git reset --hard 复位到最后一次commit
+    git checkout -- filename 把某个文件复位回最后一次commit
+    git reset commitid filename 把某个文件复位回某次提交（commitid可以用 git log filename获取）
+    git reset --hard HEAD^ #强制复位前一个commit。
     git reset --hard HEAD~3 #强制复位到前第三个3提交
     git reset HEAD #可以用来清除已经add到缓存区但是不想进一步提交的内容。
+
 ### **修改别人的项目**
 
 如果Fork别人的项目或者多人合作项目，最好每人都拥有一个独立分支，然后由项目维护人合并。如何建立自己的分支？
