@@ -11,6 +11,7 @@ GridFS不适用于原子级地更新整个文件的需求。
 GridFS文件是存储在两个集合中的
 * chunks 存储文件字节数据 
 * files 存储文件的 metadata
+
 GridFS在存储文件的时候，会根据files中chunkSize大小（默认256kb）把文件切割为多个chunks进行存储。然后在获取文件的时候，会根据files_id查找到所有的chunks，再根据chunks中的n字段进行拼接，得到整个文件。
 
 ![示例图](https://github.com/fuhaih/MyDiary/blob/master/nosql/gridfs存储示意图.png)
