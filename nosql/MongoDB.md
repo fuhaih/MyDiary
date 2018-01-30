@@ -26,14 +26,12 @@ GridFS在存储文件的时候，会根据files中chunkSize大小（默认256kb�
 }
 ```
 每个chunk中包含上面几个字段
-
-**chunks._id**：chunks的id
-
-**chunks.files_id**：对应的files_id
-
-**chunks.n**：chunks的序列号
-
-**chunks.data**：BSON 二进制数据
+|字段|说明|
+|:---|:---|
+|chunks._id|chunks的id|
+|chunks.files_id|对应的files_id|
+|chunks.n|chunks的序列号|
+|chunks.data|BSON 二进制数据|
 
 ### files集合
 ```csharp
@@ -50,24 +48,17 @@ GridFS在存储文件的时候，会根据files中chunkSize大小（默认256kb�
 }
 ```
 每个files包含以上字段
-
-**files._id**：id，可以使BSON ObjectId，也可以用guid.
-
-**files.length**：文件字节大小
-
-**files.chunkSize**：规定每个chunk的大小，版本2.4.10: 默认chunk size从256kB变为 255kB.
-
-**files.uploadDate**：文件首次存储的时间
-
-**files.md5**：文件的md5值
-
-**files.filename**：文件名
-
-**files.contentType**：文件类型
-
-**files.aliases**：文件别名
-
-**files.metadata**：元数据，可以存储任意类型的信息（object），一般BSON格式存储用户自定义的文件信心，用来进行文件检索
+|字段|说明|
+|:---|:---|
+|files._id|id，可以使BSON ObjectId，也可以用guid.
+|files.length|文件字节大小
+|files.chunkSize|规定每个chunk的大小，版本2.4.10: 默认chunk size从256kB变为 255kB.
+|files.uploadDate|文件首次存储的时间
+|files.md5|文件的md5值
+|files.filename|文件名
+|files.contentType|文件类型
+|files.aliases|文件别名
+|files.metadata|元数据，可以存储任意类型的信息（object），一般BSON格式存储用户自定义的文件信心，用来进行文件检索
 ### GridFS中索引
 #### chunks 索引
 chunks用files_id and n字段作为唯一的聚集索引，这样可以有效地检索文件
