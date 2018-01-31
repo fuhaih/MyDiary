@@ -1,12 +1,5 @@
 # 入门使用
 
-```csharp
->show tables//显示当前数据库中的所有集合(collection)
-report
->db.report.find().limit(10)//查询report集合中的前10条数据
->db.system.indexes.find()//查看索引
-```
-
 ## 创建连接
 ```csharp
 > conn = new Mongo("localhost:27017")
@@ -68,7 +61,7 @@ system.js
 
 ## 索引管理
 ### 创建索引
-db.COLLECTION_NAME.ensureIndex(keys[,options])
+db.COLLECTION_NAME.ensureIndex(keys,options)
  **参数**
  
 |参数	|类型	|描述|
@@ -89,7 +82,7 @@ db.COLLECTION_NAME.ensureIndex(keys[,options])
 |weights|数值|索引权重值，数值在 1 到 99,999 之间，表示该索引相对于其他索引字段的得分权重。|
 
 ```csharp
-> db.mycollection.ensureIndex({name: 1, domain: -1})
+> db.mycollection.ensureIndex({"name": 1, "domain": -1})
 {
   "createdCollectionAutomatically" : false,
   "numIndexesBefore" : 1,
