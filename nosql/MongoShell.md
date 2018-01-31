@@ -131,16 +131,51 @@ db.COLLECTION_NAME.getIndexes()
 ### 查看数据库中所有的索引
 ```csharp
 >db.system.indexes.find()//查询数据库中所有索引
-{ "v" : 1, "key" : { "_id" : 1 }, "name" : "_id_", "ns" : "mytest.mycollection" }
-{ "v" : 1, "key" : {"name" : 1,"domain" : -1},"name" : "name_1_domain_-1","ns" : "mytest.mycollection"}
-{ "v" : 1, "key" : { "_id" : 1 }, "name" : "_id_", "ns" : "mytest.fs.files" }
-{ "v" : 1, "key" : { "filename" : 1, "uploadDate" : 1 }, "name" : "filename_1_uploadDate_1", "ns" : "mytest.fs.files" }
-{ "v" : 1, "key" : { "_id" : 1 }, "name" : "_id_", "ns" :"mytest.fs.chunks" }
-{ "v" : 1, "unique" : true, "key" : { "files_id" : 1, "n" : 1 }, "name" : "files_id_1_n_1", "ns" : "mytest.fs.chunks" }
-{ "v" : 1, "key" : { "_id" : 1 }, "name" : "_id_", "ns" : "mytest.system.js" }
+{ "v" : 1, 
+  "key" : { "_id" : 1 }, 
+  "name" : "_id_", 
+  "ns" :"mytest.mycollection" }
+{ "v" : 1, 
+  "key" : {"name" : 1,"domain" : -1},
+  "name" : "name_1_domain_-1","ns" : 
+  "mytest.mycollection"}
+{ 
+  "v" : 1, 
+  "key" : { "_id" : 1 }, 
+  "name" : "_id_", 
+  "ns" : "mytest.fs.files" }
+{ 
+  "v" : 1, 
+  "key" : { "filename" : 1, "uploadDate" : 1 }, 
+  "name" : "filename_1_uploadDate_1", 
+  "ns" : "mytest.fs.files" }
+{ 
+  "v" : 1, 
+  "key" : { "_id" : 1 }, 
+  "name" : "_id_", 
+  "ns" :"mytest.fs.chunks" }
+{ 
+  "v" : 1, 
+  "unique" : true, 
+  "key" : { "files_id" : 1, "n" : 1 }, 
+  "name" : "files_id_1_n_1", 
+  "ns" : "mytest.fs.chunks" }
+{ 
+  "v" : 1, 
+  "key" : { "_id" : 1 }, 
+  "name" : "_id_", 
+  "ns" : "mytest.system.js" }
 >db.system.indexes.find({“ns”:"mytest.mycollection"})//查询mycollection集合的索引
-{ "v" : 1, "key" : { "_id" : 1 }, "name" : "_id_", "ns" : "mytest.mycollection" }
-{ "v" : 1, "key" : {"name" : 1,"domain" : -1},"name" : "name_1_domain_-1","ns" : "mytest.mycollection"}
+{ 
+  "v" : 1, 
+  "key" : { "_id" : 1 }, 
+  "name" : "_id_", 
+  "ns" : "mytest.mycollection" }
+{ 
+  "v" : 1, 
+  "key" : {"name" : 1,"domain" : -1},
+  "name" : "name_1_domain_-1",
+  "ns" : "mytest.mycollection"}
 ```
 
 ### 查看集合中的索引大小
