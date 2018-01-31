@@ -73,6 +73,8 @@ git 在pull或者合并分支的时候有时会遇到这个界面。可以不管
     git stash #临时修改暂时存放起来
     git stash clear #清空临时缓存
     git stash list #显示缓存
+    git stash pop #把最后一个版本的stash取出来
+    git stash apply stash@{1} #把指定版本的stash取出来
 
 有时候合并会出现异常，需要把当前的更改先缓存起来才能进行合并
 ### **合并异常**
