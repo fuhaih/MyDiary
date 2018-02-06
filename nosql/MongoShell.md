@@ -6,20 +6,21 @@
 connection to localhost:27017
 ```
 ## 创建数据库
-
+mongo数据库是不需要手动创建的，可以通过use切换到任何数据库，即便该数据库还没有创建，当往数据库中插入数据时才会创建数据库。
 ```csharp
 >use mytest //创建数据库mytest
 switched to db mytest
 ```
-创建完之后，当前的db就是新建的库
 ## 切换数据库
 ```csharp
 > show dbs //列出所有的数据库
 mytest
 test
 TTBEMS
-> db = conn.getDB("mytest")//获取数据库
+> db = conn.getDB("mytest")//切换到mytest数据库中
 mytest
+>use mytest//同样是切换到mytest数据库中
+switched to db mytest
 >db//显示当前数据库
 mytest
 ```
@@ -57,6 +58,14 @@ fs.files
 system.indexes
 system.js
 >db.mycollection.find().limit(10)//查询mycollection集合中的前10条数据
+```
+
+## 删除表/数据库
+```csharp
+>db.mycollection.drop()//删除表
+true
+> db.dropDatabase()//删除数据库
+{ "dropped" : "mytest", "ok" : 1 }
 ```
 
 ## 索引管理
