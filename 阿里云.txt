@@ -2,3 +2,6 @@
 远程连接密码 ：156841
 登录名:root
 密码:Fx xxx xxx 123
+
+linux服务器vnc密码
+xx xxx xxx 123
