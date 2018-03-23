@@ -1,29 +1,29 @@
 //table2excel.js
 /*
-ÓÃ·¨
+ï¿½Ã·ï¿½
 $("#table2excel").table2excel({
-  // ²»±»µ¼³öµÄ±í¸ñÐÐµÄCSS classÀà
+  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä±ï¿½ï¿½ï¿½Ðµï¿½CSS classï¿½ï¿½
   exclude: ".noExl",
-  // µ¼³öµÄExcelÎÄµµµÄÃû³Æ
+  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Excelï¿½Äµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
   name: "Excel Document Name",
-  // ExcelÎÄ¼þµÄÃû³Æ
+  // Excelï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
   filename: "myExcelTable"
 });
-ÅäÖÃ²ÎÊý
+ï¿½ï¿½ï¿½Ã²ï¿½ï¿½ï¿½
 
-table2excel²å¼þµÄ¿ÉÓÃÅäÖÃ²ÎÊýÓÐ£º
+table2excelï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã²ï¿½ï¿½ï¿½ï¿½Ð£ï¿½
 
-exclude£º²»±»µ¼³öµÄ±í¸ñÐÐµÄCSS classÀà¡£
+excludeï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä±ï¿½ï¿½ï¿½Ðµï¿½CSS classï¿½à¡£
 
-name£ºµ¼³öµÄExcelÎÄµµµÄÃû³Æ¡£
+nameï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Excelï¿½Äµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¡ï¿½
 
-filename£ºExcelÎÄ¼þµÄÃû³Æ¡£
+filenameï¿½ï¿½Excelï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¡ï¿½
 
-exclude_img£ºÊÇ·ñµ¼³öÍ¼Æ¬¡£
+exclude_imgï¿½ï¿½ï¿½Ç·ñµ¼³ï¿½Í¼Æ¬ï¿½ï¿½
 
-exclude_links£ºÊÇ·ñµ¼³ö³¬Á´½Ó
+exclude_linksï¿½ï¿½ï¿½Ç·ñµ¼³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-exclude_inputs£ºÊÇ·ñµ¼³öÊäÈë¿òÖÐµÄÄÚÈÝ¡£
+exclude_inputsï¿½ï¿½ï¿½Ç·ñµ¼³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½Ý¡ï¿½
 */
 /*
  *  jQuery table2excel - v1.1.1
@@ -178,7 +178,7 @@ exclude_inputs£ºÊÇ·ñµ¼³öÊäÈë¿òÖÐµÄÄÚÈÝ¡£
 
             if ($.isArray(table)) {
                 for (i in table) {
-                    //È¥³ýÒ»Ð©×Ô¶¨Òå·½·¨
+                    //È¥ï¿½ï¿½Ò»Ð©ï¿½Ô¶ï¿½ï¿½å·½ï¿½ï¿½
                     if (!table.hasOwnProperty(i)) {
                         continue;
                     } 
@@ -189,32 +189,22 @@ exclude_inputs£ºÊÇ·ñµ¼³öÊäÈë¿òÖÐµÄÄÚÈÝ¡£
 
             fullTemplate += e.template.mid;
 
-<<<<<<< Updated upstream
             if ($.isArray(table)) {
-                for (var i = 0; i < table.length;i++) {
-                    fullTemplate += e.template.table.head + "{table" + i + "}" + e.template.table.tail;
-=======
-            if ( $.isArray(table) ) {
                 for (i in table) {
                     if (!table.hasOwnProperty(i)) {
                         continue;
                     } 
                     fullTemplate += e.template.table.head + table[i] + e.template.table.tail;
->>>>>>> Stashed changes
                 }
             }
 
             fullTemplate += e.template.foot;
 
-<<<<<<< Updated upstream
-            for (var i = 0; i < table.length;i++)
-            {
-=======
+
             for (i in table) {
                 if (!table.hasOwnProperty(i)) {
                     continue;
                 } 
->>>>>>> Stashed changes
                 e.ctx["table" + i] = table[i];
             }
             delete e.ctx.table;
