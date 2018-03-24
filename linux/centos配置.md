@@ -1,7 +1,7 @@
 # 用vnc连接linux图形界面
 ## windows安装vnc
 
-在window中安装vnc view就行了
+        在window中安装vnc view就行了
 ## linux安装vnc server
 模糊查询vnc的包
 
@@ -58,12 +58,12 @@ ctrl+alt+f2进行图形化界面和命令行界面切换
 
 # vim 使用
 
-i 进入编辑状态
+        i 进入编辑状态
 
-esc 推出编辑
+        esc 推出编辑
 
-:q 退出不保存
+        :q 退出不保存
 
-:wq 保存退出
+        :wq 保存退出
 
-:q! 强制退出
+        :q! 强制退出
