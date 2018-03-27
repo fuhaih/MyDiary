@@ -54,7 +54,7 @@ vncserver 重启
 
 
 # linux使用技巧
-ctrl+alt+f2进行图形化界面和命令行界面切换
+        ctrl+alt+f2进行图形化界面和命令行界面切换
 
 # vim 使用
 
