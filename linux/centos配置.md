@@ -54,7 +54,14 @@ vncserver 重启
 
 
 # linux使用技巧
-        ctrl+alt+f2进行图形化界面和命令行界面切换
+        gnome desktop:
+        使用startx指令可以进入桌面
+# 防火墙
+centeos中有两个工具可以设置防火墙
+## firewalld 
+firewalld是centos 7 中默认使用的
+## iptables
+
 
 # vim 使用
 
@@ -67,3 +74,13 @@ vncserver 重启
         :wq 保存退出
 
         :q! 强制退出
+## vim非正常退出
+vim在编辑的时候会生成一个.filename.swp的文件，如在编辑/etc/mongod.conf文件时，如果异常退出，会生产一个/etc/.mongod.conf.swp的文件，如果时正常退出，会自动删除该问题。
+异常退出恢复就是靠该文件：
+```vim shell
+# 异常退出恢复
+vim -r /etc/mongod.conf
+
+# 恢复完成后可以删除swp文件
+rm /etc/.mongod.conf.swp
+```
