@@ -49,6 +49,7 @@ SELINUX=permissive
  mongo
  # 退出mongodb
  exit
+
  ```
 
  ## 7、卸载mongodb

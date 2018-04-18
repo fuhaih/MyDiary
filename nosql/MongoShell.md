@@ -60,6 +60,55 @@ system.js
 >db.mycollection.find().limit(10)//查询mycollection集合中的前10条数据
 ```
 
+## 数据更新
+
+**数组更新**
+
+在3.6版本前，不支持多维数组对象的更新
+```csharp
+>db.task.update({
+  {"id_":"001"},
+  {"tasks.id":"t001"}
+},{$set:{"tasks.$.name":"test"}})
+input:
+{_id:001,tasks:[{ id:t001,name:fuhai},{id:t002,name:haizi}]}
+output:
+{_id:001,tasks:[{id:t001,name:test},{id:t002,name:haizi}]}
+```
+[3.6版本](https://jira.mongodb.org/browse/SERVER-831)
+
+**更新数组中所有文档**
+```csharp
+>db.coll.update({}, {$set: {“a.$[].b”: 2}})
+Input: {a: [{b: 0}, {b: 1}]}
+Output: {a: [{b: 2}, {b: 2}]}
+```
+**更新数组中所有匹配的文档**
+```csharp
+>db.coll.update({}, {$set: {“a.$[i].b”: 2}}, {arrayFilters: [{“i.b”: 0}]})
+Input: {a: [{b: 0}, {b: 1}]}
+Output: {a: [{b: 2}, {b: 1}]}
+```
+**更新数组中所有匹配的数组元素**
+```csharp
+>db.coll.update({}, {$set: {“a.$[i]”: 2}}, {arrayFilters: [{i: 0}]})
+Input: {a: [0, 1]}
+Output: {a: [2, 1]}
+```
+**更新数组中所有匹配的嵌套数组**
+```csharp
+>db.coll.update({}, {$set: {“a.$[i].c.$[j].d”: 2}}, {arrayFilters: [{“i.b”: 0}, {“j.d”: 0}]})
+Input: {a: [{b: 0, c: [{d: 0}, {d: 1}]}, {b: 1, c: [{d: 0}, {d: 1}]}]}
+Output: {a: [{b: 0, c: [{d: 2}, {d: 1}]}, {b: 1, c: [{d: 0}, {d: 1}]}]}
+
+```
+
+**更新数组中所有匹配逻辑语句的数组**
+```csharp
+>db.coll.update({}, {$set: {“a.$[i]”: 2}}, {arrayFilters: [{$or: [{i: 0}, {i: 3}]}]})
+Input: {a: [0, 1, 3]}
+Output: {a: [2, 1, 2]}
+```
 ## 删除表/数据库
 ```csharp
 >db.mycollection.drop()//删除表
@@ -206,4 +255,10 @@ db.COLLECTION_NAME.dropIndexes()
   "msg" : "non-_id indexes dropped for collection",
   "ok" : 1
 }
+```
+
+## 其他
+### 查看mongodb的存储引擎
+```csharp
+>db.serverStatus()
 ```
