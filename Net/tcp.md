@@ -34,7 +34,7 @@
 # sql连接池
 ## TDS协议
     TDS协议是一种应用程序层的协议(application layer protocol)，最初, 这个协议是在1984年由Sybase Inc公司为他们的产品Sybase SQL Server 的关系数据库引擎开发的, 后来Microsoft 在 Microsoft SQL Server 中也使用这个协议
-## 网络层协议
+## [网络层协议](https://msdn.microsoft.com/zh-cn/library/ms187892.aspx)
     TDS协议是应用层协议，要把TDS数据包传输到服务端需要用网络层协议对数据包进行封装，SQL Server客户端连接服务器端的方式一般有四种：共享内存(shared memory)、TCP/IP、命名管道(Named PIPE) 、VIA,其中TCP/IP和命名管道是最常见的两种通过网络访问SQL Server数据库的协议。
 ### Shared Memory
     Shared Memory 是可供使用的最简单协议，没有可配置的设置。 由于使用 Shared Memory 协议的客户端仅可以连接到同一台计算机上运行的 SQL Server 实例，因此它对于大多数数据库活动而言是没用的。 如果怀疑其他协议配置有误，请使用 Shared Memory 协议进行故障排除。
@@ -59,5 +59,13 @@
 
 ### 启用协议
     该协议必须在客户端和服务器上都启用才能正常工作。 服务器可以同时监听所有已启用的协议的请求。 客户端计算机可以选取一个协议，或按照 SQL Server 配置管理器中列出的顺序尝试这些协议。
+
+### 使用命名管道
+    要使用命名管道连接到SQL Server，客户端代码中的连接字符串大致的语法是这样的
+    "server=.;database=northwind;uid=sa;pwd=pass@word;Network Library=dbnmpntw"
+    如果服务器是命名实例，则
+    "server=.\instanceName;database=northwind;uid=sa;pwd=pass@word;Network Library=dbnmpntw"
+
+**注意:** 必须在服务器启用named pipe协议，并且启动Broswer服务
 ## 连接池
     sql连接池是在客户端上的，通过上面socket连接的知识点可以推理出，sql客户端连接同一个服务端的时候，连接的数量是受到端口数量影响的，而官方给出的连接池连接数量的上限是32767个，而服务端的连接数量理论上是没有上限的。连接池的功能和线程池类似，可以分配连接资源，而不用每次连接数据库都重新创建连接。
