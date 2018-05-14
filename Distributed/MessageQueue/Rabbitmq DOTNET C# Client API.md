@@ -1,4 +1,4 @@
-
+# [官方文档](http://www.rabbitmq.com/dotnet-api-guide.html#consumer-callbacks-and-ordering)
 ## 创建连接和通道
 ```csharp
 ConnectionFactory factory = new ConnectionFactory();
@@ -77,7 +77,7 @@ if (result == null) {
     channel.BasicAck(result.DeliveryTag, false);
 }
 ```
-noAck 设置为false指消息消费完成之后需要Ack确认，消息队列才会删除该消息
+noAck 设置为false指消息消费完成之后需要Ack确认，消息队列才会删除该消息。如果设置为true，一旦消费者(consumer)获取到消息，那么这个message就会立刻从队列中移除，不管消息有没有成功消费。noAck设置为true会引发一个问题，如果消费者获取到消息之后，在消息消费过程中挂了，那么这个消息没有被成功消费，同时消息队列里也已经没有该消息，该消息就会丢失。
 
 ## 消费消息（自动）
 ```csharp
@@ -93,4 +93,5 @@ String consumerTag = channel.BasicConsume(queueName, noAck, consumer);
 //取消订阅
 channel.BasicCancel(consumerTag);
 ```
+该方式实现消息订阅，消息队列在有消息的时候会自动推送过来，然后通过Received回调函数进行消息消费主体操作。
 
