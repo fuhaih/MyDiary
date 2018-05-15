@@ -1,5 +1,5 @@
 # [官方文档](http://www.rabbitmq.com/dotnet-api-guide.html#consumer-callbacks-and-ordering)
-## 创建连接和通道
+## 创建连接和信道
 ```csharp
 ConnectionFactory factory = new ConnectionFactory();
 // "guest"/"guest" by default, limited to localhost connections
@@ -14,9 +14,10 @@ IConnection conn = factory.CreateConnection();
 ConnectionFactory factory = new ConnectionFactory();
 factory.Uri = "amqp://user:pass@hostName:port/vhost";
 IConnection conn = factory.CreateConnection();
-//创建通道
+//创建信道
 IModel channel = conn.CreateModel();
-//关闭通道
+
+//关闭信道
 channel.Close();
 //关闭连接
 conn.Close();
@@ -81,6 +82,9 @@ noAck 设置为false指消息消费完成之后需要Ack确认，消息队列才
 
 ## 消费消息（自动）
 ```csharp
+//公平分发，同一时间只处理一个消息
+//在上个消息未交付（ack确认）之前不会再分发消息
+channel.BasicQos(0, 1, false);
 bool noAck = false;
 var consumer = new EventingBasicConsumer(channel);
 consumer.Received += (ch, ea) =>
