@@ -84,3 +84,43 @@ vim -r /etc/mongod.conf
 # 恢复完成后可以删除swp文件
 rm /etc/.mongod.conf.swp
 ```
+
+
+# linux 配置静态ip
+## 方法1
+查找/etc/sysconfig/network-scripts目录下的ifcfg-enp0s3文件
+````vim shell
+ls /etc/sysconfig/network-scripts
+````
+如果有该文件，就打开进行编辑
+```vim shell
+vi /etc/sysconfig/network-scripts/ifcfg-enp0s3
+```
+编辑内容如下
+```vim shell
+TYPE="Ethernet"
+PROXY_METHOD="none"
+BROWSER_ONLY="no"
+BOOTPROTO="static"
+IPADDR=192.168.0.17
+NETMASK=255.255.255.0
+NM_CONTROLLED="no"
+DEFROUTE="yes"
+IPV4_FAILURE_FATAL="no"
+IPV6INIT="yes"
+IPV6_AUTOCONF="yes"
+IPV6_DEFROUTE="yes"
+IPV6_FAILURE_FATAL="no"
+IPV6_ADDR_GEN_MODE="stable-privacy"
+NAME="ENP0S3"
+UUID="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+DEVICE="enp0s3"
+ONBOOT="yes"
+```
+
+重启网络
+```vim shell
+systemctl restart network.service
+```
+
+

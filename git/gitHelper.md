@@ -122,21 +122,20 @@ HEAD^是指把版本库复位到当前HEAD之前的那个节点上，把HEAD这�
     合并完后删除本地分支
 * 如何将牛人的远程分支更新到自己的本地分支？
 
-    查看当前项目下远程
+    到牛人github仓库(git@github.com:niuren/origin.git)中Fork一份到自己的github(git@github.com:my/origin.git),牛人的仓库又称为上游仓库   
+    克隆到本地  
+    git clone git@github.com:my/origin.git  
+    添加远程仓库    
+    git remote add origin 地址  
+    添加分支    
+    git branch dev  
+    查看分支关联关系    
+    git branch -vv
+    关联分支    
+    git branch --set-upstream-to=origin/master dev  
+    然后就可以用dev分支进行add commit push操作  
+    push之后，到github中，用dev分支创建一个pull request就行了
 
-    git remote
-
-    增加新的分支链接，例如
-
-    git remote add niuren giturl…
-
-    获取牛人的远程更新
-
-    git fetch niuren
-
-    将牛人的远程更新合并到本地分支
-
-    git merge niuren/master
 
 ### **.gitignore(忽略某些文件)**
 格式：
