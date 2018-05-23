@@ -1,55 +1,50 @@
-# 端口号
+# 1 网络基础
+## 1.1 端口号
     按端口号可分为3大类：
     （1）公认端口（Well Known Ports）：从0到1023，它们紧密绑定（binding）于一些服务。通常这些端口的通讯明确表明了某种服务的协议。例如：80端口实际上总是HTTP通讯。
     （2）注册端口（Registered Ports）：从1024到49151。它们松散地绑定于一些服务。也就是说有许多服务绑定于这些端口，这些端口同样用于许多其它目的。例如：许多系统处理动态端口从1024左右开始。
     （3）动态和/或私有端口（Dynamic and/or Private Ports）：从49152到65535。理论上，不应为服务分配这些端口。实际上，机器通常从1024起分配动态端口。但也有例外：SUN的RPC端口从32768开始。
-# 协议号
+## 1.2 协议号
+    # 每个协议会有一个协议号，跟端口号类似
     TCP：  6 
     UDP：  17
-    GRE：  47
-    ESP：  50
-    AH：    51
-    EIGRP： 88
-    OSPF：  89
-    PIM：  103
-    IPX：   111
-    VRRP： 112
-    L2TP：  115
-    lSIS： 124
-    IPv4： 4
-    IPv6： 41
-    ICMP：1
-    IGMP：2
 
-# 网络七层协议
-# socket
-## 什么是socket
+## 1.3 网络七层协议
+## 1.4 window中查看端口tcp连接情况
+```csharp
+//列出某个端口的所有连接情况
+netstat -ano | find "1415"
+//统计某个端口的连接数
+netstat -ano|find /c ":1415 "
+```
+# 2 socket
+## 2.1 什么是socket
     socket是通信的编程方法。
     最底可以到网络层，即ip层。
     高点的都可以，传输层，即tcp/udp; 也可以实现应用层，例如stmp等。
     综上，基于指的是最底下的那个：ip协议！
-## socket连接
+## 2.2 socket连接
     内核是以一个（著名的）5元信息组来标识不同的socket的：源地址、源端口、目的地址、目的端口、协议号。任何一个不同，都不叫“同一个socket”。
     理论上，服务端的socket连接数量是没有限制的，但是不能有两个相同的socket连接，而客户端如果连接同一个服务端，也就是socket的目的地址、目的端口相同的时候，客户端的socket连接数量是受到端口数量影响的。
-# sql连接池
-## TDS协议
+# 3 sql连接池
+## 3.1 TDS协议
     TDS协议是一种应用程序层的协议(application layer protocol)，最初, 这个协议是在1984年由Sybase Inc公司为他们的产品Sybase SQL Server 的关系数据库引擎开发的, 后来Microsoft 在 Microsoft SQL Server 中也使用这个协议
-## [网络层协议](https://msdn.microsoft.com/zh-cn/library/ms187892.aspx)
+## 3.2 [网络层协议](https://msdn.microsoft.com/zh-cn/library/ms187892.aspx)
     TDS协议是应用层协议，要把TDS数据包传输到服务端需要用网络层协议对数据包进行封装，SQL Server客户端连接服务器端的方式一般有四种：共享内存(shared memory)、TCP/IP、命名管道(Named PIPE) 、VIA,其中TCP/IP和命名管道是最常见的两种通过网络访问SQL Server数据库的协议。
-### Shared Memory
+### 3.2.1 Shared Memory
     Shared Memory 是可供使用的最简单协议，没有可配置的设置。 由于使用 Shared Memory 协议的客户端仅可以连接到同一台计算机上运行的 SQL Server 实例，因此它对于大多数数据库活动而言是没用的。 如果怀疑其他协议配置有误，请使用 Shared Memory 协议进行故障排除。
 
 **说明**
     
     使用 MDAC 2.8 或更早版本的客户端不能使用 Shared Memory 协议。 如果这些客户端尝试使用，将自动切换为 Named Pipes 协议。
 
-### TCP/IP
+### 3.2.2 TCP/IP
     TCP/IP 是 Internet 上广泛使用的通用协议。 它与互连网络中硬件结构和操作系统各异的计算机进行通信。 TCP/IP 包括路由网络流量的标准，并能够提供高级安全功能。 它是目前在商业中最常用的协议。 将计算机配置为使用 TCP/IP 可能会很复杂，但大多数联网的计算机已经配置正确。 若要配置未在 SQL Server 配置管理器中出现的 TCP/IP 设置，请参阅 Microsoft Windows 文档。
 
-### 命名管道
+### 3.2.3 命名管道
     Named Pipes 是为局域网而开发的协议。 内存的一部分被某个进程用来向另一个进程传递信息，因此一个进程的输出就是另一个进程的输入。 第二个进程可以是本地的（与第一个进程位于同一台计算机上），也可以是远程的（位于联网的计算机上）。
 
-### Named Pipes 与TCP/IP 套接字
+### 3.2.4 Named Pipes 与TCP/IP 套接字
     在快速局域网 (LAN) 环境中，传输控制协议或 Internet 协议 (TCP/IP) 套接字客户端和 Named Pipes 客户端在性能方面不相上下。 但是，网络速度越慢[如在广域网 (WAN) 或拨号网络上]，TCP/IP 套接字客户端与 Named Pipes 客户端的性能差异越明显。 这是因为进程间通信 (IPC) 的机制在对等项间的通信方式不同。
     对于 Named Pipes，通常网络通信交互性更强。 一个对等方直到另一个对等方使用读取命令请求数据时才发送数据。 在开始读取数据前，网络读取一般包括一系列窥视 Named Pipes 的信息。 这在慢速网络中可能开销非常大，并会导致过多的网络流量，其他的网络客户端反过来也会受到影响。
     阐明所讨论的是本地管道还是网络管道也很重要。 如果服务器应用程序在运行 SQL Server 实例的计算机的本地运行，则可以选择本地 Named Pipes 协议。 本地 Named Pipes 以内核模式运行且速度非常快。
@@ -57,23 +52,17 @@
     TCP/IP 套接字还支持积压队列。 试图连接到 SQL Server 时，与可能导致管道忙错误的 Named Pipes 相比，该队列可以带来有限的平稳效果。
     通常，TCP/IP 在慢速 LAN、WAN 或拨号网络中效果较好。而当网络速度不成问题时，Named Pipes 则是更好的选择，因为其功能更强、更易于使用并具有更多的配置选项。
 
-### 启用协议
+### 3.2.5 启用协议
     该协议必须在客户端和服务器上都启用才能正常工作。 服务器可以同时监听所有已启用的协议的请求。 客户端计算机可以选取一个协议，或按照 SQL Server 配置管理器中列出的顺序尝试这些协议。
 
-### 使用命名管道
+### 3.2.6 使用命名管道
     要使用命名管道连接到SQL Server，客户端代码中的连接字符串大致的语法是这样的
     "server=.;database=northwind;uid=sa;pwd=pass@word;Network Library=dbnmpntw"
     如果服务器是命名实例，则
     "server=.\instanceName;database=northwind;uid=sa;pwd=pass@word;Network Library=dbnmpntw"
 
 **注意:** 必须在服务器启用named pipe协议，并且启动Broswer服务
-## 连接池
+## 3.3 连接池
     sql连接池是在客户端上的，通过上面socket连接的知识点可以推理出，sql客户端连接同一个服务端的时候，连接的数量是受到端口数量影响的，而官方给出的连接池连接数量的上限是32767个，而服务端的连接数量理论上是没有上限的。连接池的功能和线程池类似，可以分配连接资源，而不用每次连接数据库都重新创建连接。
 
-## window中查看端口tcp连接情况
-```csharp
-//列出某个端口的所有连接情况
-netstat -ano | find "1415"
-//统计某个端口的连接数
-netstat -ano|find /c ":1415 "
-```
+
