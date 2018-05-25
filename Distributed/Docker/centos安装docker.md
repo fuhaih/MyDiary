@@ -13,6 +13,11 @@
 [root@izm5e944c3bh8eikqxjle5z ~]# service docker stop
 ```
 
+## docker开机启动
+```vim shell
+[root@izm5e944c3bh8eikqxjle5z ~]# systemctl enable docker.service
+```
+
 ## 运行测试用例
 ```vim shell
 [root@izm5e944c3bh8eikqxjle5z ~]# docker run hello-world
@@ -41,7 +46,11 @@
 ```vim shell
 [root@izm5e944c3bh8eikqxjle5z ~]# docker stop <CONTAINER ID>
 ```
-
+停止容器并不是说容器已经删除，也不需要重新执行run来创建容器，可以通过start启动已经停止的容器
+## 启动容器
+```vim shell
+[root@izm5e944c3bh8eikqxjle5z ~]# docker start <CONTAINER ID>
+```
 ## 查看容器日志
 ```vim shell
 [root@izm5e944c3bh8eikqxjle5z ~]# docker logs -f <CONTAINER ID>
