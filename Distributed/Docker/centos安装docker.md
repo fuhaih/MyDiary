@@ -60,7 +60,10 @@
 ```vim shell
 [root@izm5e944c3bh8eikqxjle5z ~]# docker rm $(docker ps -a -q)
 ```
-
+## 列出所有镜像
+```vim shell
+[root@izm5e944c3bh8eikqxjle5z ~]# docker image list
+```
 ## 删除镜像
 ```vim shell
 [root@izm5e944c3bh8eikqxjle5z ~]# docker rmi <image id/name>
