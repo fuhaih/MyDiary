@@ -18,7 +18,10 @@
 ## 重置root密码
 在安装了mysql后，默认有个root用户,密码为空
 
-    $ mysql -u root
+    # 无密码
+    $ mysql -uroot
+    # 密码为123456
+    $ mysql -uroot -p123456
     # 切换数据库
     mysql >use mysql;
     # 密码设置为123456
