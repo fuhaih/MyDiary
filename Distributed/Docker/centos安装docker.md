@@ -18,9 +18,19 @@
 [root@izm5e944c3bh8eikqxjle5z ~]# systemctl enable docker.service
 ```
 
-## 运行测试用例
-```vim shell
-[root@izm5e944c3bh8eikqxjle5z ~]# docker run hello-world
+## 创建一个新的容器并运行
+**语法:** docker run [OPTIONS] IMAGE [COMMAND] [ARG...]   
+**常用OPTIONS:**    
+* -d 后台运行
+* --name [name] 容器名称
+* --restart [value] 开机启动
+  *	不自动重启容器. (默认value)
+  * on-failure 	容器发生error而退出(容器退出状态不为0)重启容器
+  * unless-stopped 	在容器已经stop掉或Docker stoped/restarted的时候才重启容器
+  * always 	在容器已经stop掉或Docker stoped/restarted的时候才重启容器
+* -p [port:port] 端口映射
+```shell
+[root@izm5e944c3bh8eikqxjle5z ~]# docker run -d --restart always -p 6606:6606 --name firstweb fuhai/firstweb:1.0
 ```
 如果测试用例镜像不存在，docker会从远程仓库中下载镜像来运行
 
