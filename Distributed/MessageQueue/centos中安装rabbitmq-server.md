@@ -14,7 +14,7 @@
 [root@izm5e944c3bh8eikqxjle5z ~]# rabbitmq-plugins enable rabbitmq_management 启动
 [root@izm5e944c3bh8eikqxjle5z ~]# rabbitmq-plugins disable rabbitmq_management 关闭
 ```
-rabbitmq-server 安装后是默认启动了插件的，如果插件关闭，是无法开启rabbitmq-server服务的。
+rabbitmq-server 安装后是默认启动了插件的，如果插件关闭，是无法开启rabbitmq-server的控制台服务的。
 ## 开启服务
 rabbitmq安装的时候默认不是以守护进程的方式启动服务的，可以执行以下命令让mq开机启动
 ```vim shell
@@ -36,7 +36,7 @@ rabbitmq安装的时候默认不是以守护进程的方式启动服务的，可
 ```vim shell
 {rabbit, [{tcp_listeners, [5672]}, {loopback_users, ["admin"]}]}
 ```
-指定用户为admin，目前还没有穿件admin用户
+指定用户为admin，目前还没有创建admin用户
 **添加用户**
 ```vim shell
 # 创建管理员用户，负责整个MQ的运维
