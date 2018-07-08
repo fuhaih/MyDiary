@@ -85,6 +85,16 @@ vim -r /etc/mongod.conf
 rm /etc/.mongod.conf.swp
 ```
 
+## vim 搜索
+
+```vim
+#在命令编辑状态下
+/+关键字
+# 搜索author关键字
+/author
+```
+输入命令后，回车就会调整到第一个匹配的关键字的地方，按n/N会跳转到下一个匹配的关键字
+
 
 # linux 配置静态ip
 ## 方法1
