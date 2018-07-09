@@ -85,6 +85,9 @@ vim -r /etc/mongod.conf
 rm /etc/.mongod.conf.swp
 ```
 
+## vim停止输出
+Ctrl + s快捷键会让vim停止向终端输出，这时候vim就像是卡死一样，只需按Ctrl + q 即可恢复正常。
+
 
 # linux 配置静态ip
 ## 方法1
