@@ -52,6 +52,10 @@ vncserver 重启
 
 
 
+# linux 工作目录
+
+* ~ : 也就是root用户工作目录，在/root/下
+* /home/用户名 : 一般用户工作目录
 
 # linux使用技巧
         gnome desktop:
