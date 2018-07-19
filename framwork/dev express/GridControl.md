@@ -108,3 +108,55 @@ private void gridViewDetail_InitNewRow(object sender, InitNewRowEventArgs e)
     view.SetRowCellValue(e.RowHandle, view.Columns["F_OperationMode"], "Manual");
 }
 ```
+
+# 过滤器
+ [博客通道](https://blog.csdn.net/hacky_way/article/details/7753890)
+## BetweenOperator
+> 10<=value<=100
+```csharp
+BetweenOperator btween = new BetweenOperator("value", 10, 100);
+GridView1.ActiveFilterCriteria = btween;
+```
+
+## BinaryOperator
+> name like 'fuhai%'
+ ```csharp
+BinaryOperator binary = new BinaryOperator("name","fuhai%",BinaryOperatorType.Like);
+GridView1.ActiveFilterCriteria = binary;
+```
+
+> value>=10
+ ```csharp
+BinaryOperator binary = new BinaryOperator("value",10,BinaryOperatorType.GreaterOrEqual);
+GridView1.ActiveFilterCriteria = binary;
+```
+
+## GroupOperator 
+>value<=10 or value >=100
+ ```csharp
+BinaryOperator lessthanten = new BinaryOperator("value",10,BinaryOperatorType.LessOrEqual);
+BinaryOperator bigthanhun = new BinaryOperator("value", 100, BinaryOperatorType.GreaterOrEqual);
+GroupOperator op = new GroupOperator(GroupOperatorType.Or, lessthanten, bigthanhun);
+GridView1.ActiveFilterCriteria = op;
+```
+## InOperator 
+> age in [1,50,96]
+ ```csharp
+int [] ageList=new int[]{1,50,96};
+CriteriaOperator filter = new InOperator("age",ageList);
+GridView1.ActiveFilterCriteria = filter;
+```
+
+## NotOperator  
+> value!=10
+ ```csharp
+CriteriaOperator filter = new NotOperator("value",10);
+GridView1.ActiveFilterCriteria = filter;
+```
+## NullOperator
+>name is null
+ ```csharp
+CriteriaOperator filter = new NullOperator("name");
+GridView1.ActiveFilterCriteria = filter;
+```
+
