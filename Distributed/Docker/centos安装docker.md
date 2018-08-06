@@ -21,14 +21,21 @@
 ## 创建一个新的容器并运行
 **语法:** docker run [OPTIONS] IMAGE [COMMAND] [ARG...]   
 **常用OPTIONS:**    
-* -d 后台运行
-* --name [name] 容器名称
-* --restart [value] 开机启动
-  *	不自动重启容器. (默认value)
-  * on-failure 	容器发生error而退出(容器退出状态不为0)重启容器
-  * unless-stopped 	在容器已经stop掉或Docker stoped/restarted的时候才重启容器
-  * always 	在容器已经stop掉或Docker stoped/restarted的时候才重启容器
-* -p [port:port] 端口映射
+> -d 后台运行
+
+> --name [name] 容器名称
+
+> --restart [value] 开机启动 不自动重启容器. (默认value)
+
+  >> on-failure 	容器发生error而退出(容器退出状态不为0)重启容器
+
+  >> unless-stopped 	在容器已经stop掉或Docker stoped/restarted的时候才重启容器
+
+  >> always 	在容器已经stop掉或Docker stoped/restarted的时候才重启容器
+
+> -p [port:port] 端口映射
+
+> -it 交互
 ```shell
 [root@izm5e944c3bh8eikqxjle5z ~]# docker run -d --restart always -p 6606:6606 --name firstweb fuhai/firstweb:1.0
 ```
