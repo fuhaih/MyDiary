@@ -48,3 +48,34 @@ using (var cursor = bucket.Find(filter, options))
    // var fileInfo = (await cursor.ToListAsync()).FirstOrDefault();
 }
 ```
+
+## 更新嵌套数组
+```csharp
+public async Task<UpdateResult> UpdateNode(string taskID, string subTaskID, Node node)
+{
+    var collection = database.GetCollection<TempleTask>("Task");
+
+    var filter = new BsonDocument() {
+        { "_id",new ObjectId(taskID)},
+    };
+    var subfilter = new BsonDocument() {
+        { "i.ID",subTaskID}
+    };
+    var nodefilter= new BsonDocument() {
+        { "j.ID",node.ID}
+    };
+    var update = Builders<TempleTask>.Update.Set("SubTasks.$[i].Nodes.$[j]", node);
+    UpdateOptions option = new UpdateOptions()
+    {
+        ArrayFilters = new BsonDocumentArrayFilterDefinition<TempleTask>[] {
+            new BsonDocumentArrayFilterDefinition<TempleTask>(subfilter),
+            new BsonDocumentArrayFilterDefinition<TempleTask>(nodefilter)
+        }
+    };
+    
+    UpdateResult result = await collection.UpdateManyAsync(filter, update, option);
+    return result;
+}
+```
+ArrayFilters只有3.6及以上版本有
+
