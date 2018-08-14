@@ -5,6 +5,12 @@
 # 查看内存大小
 [root@izm5e944c3bh8eikqxjle5z ~]# free
 ```
+
+# cpu
+```vim
+# 查看cpu等占用情况
+[root@izm5e944c3bh8eikqxjle5z ~]# top 
+```
 # 权限问题
 ## 开机自启动
 ```vim shell
@@ -14,3 +20,5 @@
 [root@izm5e944c3bh8eikqxjle5z ~]# chkconfig httpd.service on
 [root@izm5e944c3bh8eikqxjle5z ~]# chkconfig httpd.service off
 ```
+
+
