@@ -115,3 +115,9 @@ db.StringDecrement("testInCrement";
 //减2
 db.StringDecrement("testInCrement",2);
 ```
+
+# redis集群
+# redis生产环境问题
+>缓存雪崩
+
+>缓存击穿
