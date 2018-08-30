@@ -85,4 +85,16 @@
 ## 删除镜像
 ```vim shell
 [root@izm5e944c3bh8eikqxjle5z ~]# docker rmi <image id/name>
+# 删除<none>镜像
+[root@izm5e944c3bh8eikqxjle5z ~]# docker rmi $(docker images -f "dangling=true" -q)
 ```
+同一个镜像可以有多个tag，所以有可能看到有两个镜像拥有相同的镜像id，所以docker rmi `<name>`有可能只是删除一个tag而已，镜像不会真正删除镜像。
+
+# Docker一些目录
+> /var/run/docker.sock
+
+docker套接字，docker的镜像和容器操作是通过与这个套接字通讯来实现的，很重要的文件
+
+> /var/lib/docker
+
+docker文件目录，包括镜像、容器、数据卷等都在这里，在删除旧版本的docker的时候，如果旧版docker里的镜像和容器等都不需要，可以删除这个文件夹
