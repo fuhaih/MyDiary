@@ -63,6 +63,7 @@ gridViewCurrent.Columns["F_Time"].DisplayFormat.FormatType = DevExpress.Utils.Fo
 gridViewCurrent.Columns["F_Time"].DisplayFormat.FormatString = "yyyy/MM/dd HH:mm:ss";
 ```
 ## 符合条件行变色
+>通过事件来实现
 ```csharp
 //有两个事件可以实现
 //事件1
@@ -81,8 +82,24 @@ private void gridView1_CustomDrawCell(object sender, DevExpress.XtraGrid.Views.G
         e.Appearance.BackColor = Color.Red;
     }
 }
-
 ```
+
+>通过GridFormatRule来实现
+```csharp
+//在有UnboundColumn的情况下也能用，以下的gridColumnNum就是一个UnboundColumn，RelateNum是该列的FieldNam
+GridFormatRule rule = new GridFormatRule();
+//指定应用到哪一列
+rule.Column = gridColumnNum;
+//应用到一整行，这时候可以不指定列
+rule.ApplyToRow = true;
+rule.Rule = new FormatConditionRuleExpression()
+{
+    Expression = "[RelateNum] > 0",
+    PredefinedName = "Green Fill, Green Text"
+};
+gridViewMeter.FormatRules.Add(rule);
+```
+
 # 给新增行的某一列设置默认值
 ```csharp
 //允许新增行
