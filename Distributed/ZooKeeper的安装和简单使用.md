@@ -114,3 +114,81 @@ zk.Delete("/root/node1", -1);
 临时节点比较适合用来作为锁，当客户端与zookeeper断开连接时，节点删除，相当于解锁，这样就不会因客户端网络等原因而长期占有锁。
 
 >无序节点和有序节点
+
+无序节点在创建节点时：
+```csharp
+string nodename1=zk.Create("/root/node", "node".GetBytes(), Ids.OPEN_ACL_UNSAFE,CreateMode.Persistent);
+string nodename2=zk.Create("/root/node", "node".GetBytes(), Ids.OPEN_ACL_UNSAFE,CreateMode.Persistent);
+```
+上述代码第二行会异常，因为已经在root下有一个node节点了    
+有序节点在创建节点时会进行编号：
+```csharp
+string nodename1=zk.Create("/root/node", "node".GetBytes(), Ids.OPEN_ACL_UNSAFE,CreateMode.Persistent);
+string nodename2=zk.Create("/root/node", "node".GetBytes(), Ids.OPEN_ACL_UNSAFE,CreateMode.Persistent);
+zk.GetData(nodename2, true, null);
+//下面代码异常
+zk.GetData("/root/node", true, null);
+
+//nodename1=/root/node00001
+//nodename2=/root/node00002
+```
+所以上诉代码不会异常，但是在获取节点的时候需要传入的是Create返回来的节点名称，删除时也一样
+
+## ConnectionLossException
+这个异常发生的可能原因有两个    
+1、服务器异常，这个需要查看服务器   
+2、在创建zookeeper对象的时候，zookeeper对象是异步连接服务器的，所以可能发生zookeeper还没连接上服务器就开始发送指令（调用Exits等方法）的情况，这时候就报错
+
+>针对情况2的解决方案
+
+重写Watcher
+```csharp
+public class Watcher : IWatcher
+{
+    private AutoResetEvent ConnectedEven;
+    public void Process(WatchedEvent @event)
+    {
+        if (@event.State == KeeperState.SyncConnected)
+        {
+            ConnectedEven.Set();
+        }
+    }
+
+    public Watcher(AutoResetEvent connectedEven)
+    {
+        ConnectedEven = connectedEven;
+    }
+}
+```
+AutoResetEvent阻塞线程，直到zk连接成功或者超时
+```csharp
+AutoResetEvent autoResetEvent = new AutoResetEvent(false);
+Watcher watcher = new Watcher(autoResetEvent);
+ZooKeeper zk = new ZooKeeper(district.Zookeeper.Host, new TimeSpan(0, 0, 0, district.Zookeeper.SessionTimeout), watcher);
+bool waitzk = autoResetEvent.WaitOne(15000);
+if (!waitzk) 
+{
+    //超时未连接成功
+}
+var rootstate = zk.Exists("/root", true);
+```
+
+## 分布式锁
+NuGet 安装ZooKeeper.Net.Recipes
+```csharp
+ZooKeeper zk = new ZooKeeper("47.106.162.159:2181", new TimeSpan(0, 0, 0, 5000), new Watcher());
+AutoResetEvent autoResetEvent = new AutoResetEvent(false);
+WriteLock writelock = new WriteLock(zk, "/testroot/lock", Ids.OPEN_ACL_UNSAFE);
+writelock.LockAcquired += () =>
+{
+    Console.WriteLine("获取到锁");
+    autoResetEvent.Set();
+};
+bool bl= writelock.Lock();
+bool waitzk = autoResetEvent.WaitOne(15000);
+if (!waitzk) 
+{
+    //超时未连接成功
+}
+```
+
