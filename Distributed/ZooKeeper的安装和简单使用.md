@@ -79,7 +79,11 @@ ZooKeeper zk = new ZooKeeper("127.0.0.1:2181", new TimeSpan(0, 0, 0, 50000), new
 var rootstate = zk.Exists("/root", true);
 if (rootstate == null)
 {
-    zk.Create("/root", "root".GetBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.Persistent);
+    //判断然后创建不是原子操作，在节点已经存在时创建会报错。
+    try{
+        zk.Create("/root", "root".GetBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.Persistent);
+    }catch{}
+    
 }
 //在root下面创建一个node1 节点,数据为node1,不进行ACL权限控制，节点为永久性的 
 string node1 = zk.Create("/root/node1", "node1".GetBytes(), Ids.OPEN_ACL_UNSAFE,CreateMode.Persistent);
