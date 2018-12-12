@@ -36,6 +36,9 @@ rabbitmq安装的时候默认不是以守护进程的方式启动服务的，可
 ```vim shell
 {rabbit, [{tcp_listeners, [5672]}, {loopback_users, ["admin"]}]}
 ```
+
+**注意：** `{loopback_users, ["admin"]},`会报错，因为后面有`,`号，这个异常经常出现在直接从配置文件中删除`%`的时候，最后一个配置后面的逗号没有去掉。
+
 指定用户为admin，目前还没有创建admin用户
 **添加用户**
 ```vim shell
