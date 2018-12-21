@@ -26,6 +26,19 @@ netstat -ano|find /c ":1415 "
 ## 2.2 socket连接
     内核是以一个（著名的）5元信息组来标识不同的socket的：源地址、源端口、目的地址、目的端口、协议号。任何一个不同，都不叫“同一个socket”。
     理论上，服务端的socket连接数量是没有限制的，但是不能有两个相同的socket连接，而客户端如果连接同一个服务端，也就是socket的目的地址、目的端口相同的时候，客户端的socket连接数量是受到端口数量影响的。
+
+## 2.3 socket tcp连接时两个缓冲区
+
+## 2.4 socket tcp粘包问题和保护消息边界
+
+## 2.5 WSAEWOULDBLOCK异常
+
+    使用非阻塞模式时，如果当前操作不能立即完成则会返回失败，错误码是WSAEWOULDBLOCK，这是正常的，程序可以先执行其它任务，过一段时间后再重试该操作。
+
+## 2.6 socket和tcp,udp
+
+    socket是Windows提供网络编程接口，TCP/IP是网络传输协议，使用socket是可以使用多种协议，其中包括TCP/IP。
+
 # 3 sql连接池
 ## 3.1 TDS协议
     TDS协议是一种应用程序层的协议(application layer protocol)，最初, 这个协议是在1984年由Sybase Inc公司为他们的产品Sybase SQL Server 的关系数据库引擎开发的, 后来Microsoft 在 Microsoft SQL Server 中也使用这个协议
