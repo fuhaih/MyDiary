@@ -136,3 +136,9 @@ new ParameterExpression[] { variableExpr },
 //生成表达式 ()=>{int i=17;return i.ToString();}
 Expression.Lambda<Func<string>>(blockExpr).Compile()
 ```
+
+# 问题
+
+>PropertyExpression
+
+该类是内部类，只能dll内部使用，需要构造一个用到属性的表达式时，用MemberExpressiont替换
