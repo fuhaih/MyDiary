@@ -1,7 +1,4 @@
 # 启动一个带有ui上下文的线程
-
-
-
 >通过SynchronizationContext更新ui
 ```csharp
 SynchronizationContext context = SynchronizationContext.Current;
