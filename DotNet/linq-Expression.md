@@ -46,6 +46,11 @@ Expression.Lambda<Func<int,bool>>(btweenExpr, input).Compile();
 
 > Unbox 拆箱，拆箱只适用于值类型
 
+>Property
+```csharp
+MemberExpression memberExpression = Expression.Property(input, "Id");
+```
+
 > Parameter 参数
 ```csharp
 //定义参数
