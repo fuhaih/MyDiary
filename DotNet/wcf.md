@@ -4,13 +4,24 @@
 ### 契约
 
 >服务契约 
-
+```csharp
+[ServiceContract(SessionMode = SessionMode.Required)]
+[OperationContract]
+```
 >数据契约 
+```csharp
+[DataContract]
+[DataMember]
+```
 
 >消息契约
 
 >错误契约
 ### 绑定
+
+>protocolMapping
+
+这个是绑定的默认配置，有时候绑定配置没有用是跟这个有关
 
 # wcf编程
 ## wcf 服务实例模式
@@ -48,4 +59,62 @@
             return "test";
         }
     }
+```
+
+## 单个客户端在wcf中共享变量
+
+**缺点**:通讯是比较慢
+```csharp
+//服务行为
+[ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.PerSession)]
+//服务契约
+[ServiceContract(SessionMode = SessionMode.Required)]
+//绑定需要支持session的绑定
+netHttpBinding
+```
+
+#一个wcf配置实例
+
+```xml
+  <system.serviceModel>
+    <services>
+      <service name="DeclareConfig.Service.DeclareService">
+        <endpoint address="" binding="basicHttpBinding" bindingConfiguration="NewBinding0"
+          contract="DeclareConfig.Service.IDeclareService" />
+      </service>
+      <service name="DeclareConfig.Service.Test">
+        <endpoint address="" binding="netHttpBinding" bindingConfiguration="NewBinding1"
+          contract="DeclareConfig.Service.ITest" />
+      </service>
+      <service name="DeclareConfig.Service.FactoryService">
+        <endpoint address="" binding="basicHttpBinding" bindingConfiguration="NewBinding0"
+          contract="DeclareConfig.Service.IFactoryService" />
+      </service>
+    </services>
+    <behaviors>
+      <serviceBehaviors>
+        <behavior name="">
+          <serviceMetadata httpGetEnabled="true" httpsGetEnabled="true" />
+          <serviceDebug includeExceptionDetailInFaults="true" />
+        </behavior>
+      </serviceBehaviors>
+    </behaviors>
+    <bindings>
+      <basicHttpBinding>
+        <binding name="NewBinding0" receiveTimeout="01:00:00" sendTimeout="00:10:00"
+          maxBufferPoolSize="2147483647" maxBufferSize="2147483647" maxReceivedMessageSize="2147483647" />
+      </basicHttpBinding>
+      <netHttpBinding>
+        <binding name="NewBinding1" receiveTimeout="01:00:00" sendTimeout="00:10:00"
+          maxBufferPoolSize="2147483647" maxBufferSize="2147483647" maxReceivedMessageSize="2147483647">
+          <reliableSession enabled="true" />
+        </binding>
+      </netHttpBinding>
+    </bindings>
+    <protocolMapping>
+      <remove scheme="http" />
+      <add scheme="http" binding="netHttpBinding" bindingConfiguration="NewBinding1" />
+    </protocolMapping>
+    <serviceHostingEnvironment aspNetCompatibilityEnabled="true" multipleSiteBindingsEnabled="true"/>
+  </system.serviceModel>
 ```
