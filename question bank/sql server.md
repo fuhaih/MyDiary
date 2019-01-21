@@ -1,6 +1,26 @@
-# 锁
+# 1、基本知识点
 
-## 关于锁的几个概念
+>sql server 编译、重编译、执行计划
+
+>基本数据类型
+
+>索引机制、几种索引和区别
+
+>引擎
+
+>锁机制
+
+>慢sql定位和优化
+
+>索引的原理
+
+>索引重建
+
+>union 和union all区别，lef join，not exists
+
+# 2、锁
+
+## 2.1、关于锁的几个概念
 >粒度
 
 锁是用来锁定资源，而资源是包括很多种的，而这些不同的资源代表着不同的粒度
@@ -18,6 +38,7 @@
 |METADATA|元数据锁。
 |ALLOCATION_UNIT|分配单元。
 |DATABASE|整个数据库。
+|OBJECT|代表一个数据库对象，包括数据库表、视图、存储过程或者任何包含Object ID的对象。
 
 >层次结构
 
@@ -51,7 +72,7 @@
     缺点：由于跳过了排他锁的数据，所以会导致我们有些需要的结果是没有在查询结果列表里的。
 
 
-# 数据库中快速查找死锁
+## 2.2、数据库中快速查找死锁
 
     1、打开 管理 > 扩展事件 > 会话 > system_health > package0.event_file 双击打开
 
@@ -60,11 +81,33 @@
     3、将死锁xml信息文本保存为后缀是.xdl的文件。 
 
     4、将.xdl文件打开或者直接看xml信息也能了解死锁的产生原因
-# 数据库事务
+
+## 2.3、查看某条语句会加那些锁
+```sql
+BEGIN TRANSACTION
+
+SELECT * FROM Test WITH (HOLDLOCK)
+WHERE ID = 5000
+
+SELECT * FROM sys.dm_tran_locks
+WHERE request_session_id = @@SPID
+
+ROLLBACK
+GO
+```
+WITH (HOLDLOCK)表示锁贯穿整个事务，直到事务结束才释放锁，所以查询语句的锁会保持到事务结束，这样方便我们查询锁信息。`@@SPID`是当前线程ip，也就是筛选出当前线程加的锁。
+
+```sql
+ALTER INDEX idx_ci ON Foo REBUILD
+WITH (ALLOW_ROW_LOCKS = OFF)
+GO
+```
+在重建索引时可以使用ALLOW_ROW_LOCKS 和ALLOW_PAGE_LOCKS来设置是否停用行层级锁和页层级锁
+# 3、数据库事务
 
 
 
-## 数据库事务ACID特性
+## 3.1、数据库事务ACID特性
 
 >原子性（Atomicity）
 
@@ -74,7 +117,7 @@
 
 >持久性（Durability）
 
-## 事务的隔离级别
+## 3.2、事务的隔离级别
 
 >READ_UNCOMMITTED
 
@@ -84,4 +127,4 @@
 
 >SERLALIZABLE
 
-# 数据库索引
+# 3.3、数据库索引
