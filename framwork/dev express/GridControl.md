@@ -1,16 +1,16 @@
-# 数据绑定
-## 简单绑定
+# 1、数据绑定
+## 1.1、简单绑定
 
 ```csharp
 DataTable value;
 gridControlAccount.DataSource =value;
 ```
-## 主从表
-* 定义主从表视图    
+## 1.2、主从表
+### 1.2.1 定义主从表视图    
 主表视图就用默认的GridView
 从表视图是添加一个Level，在Level中新建一个视图
 ![Master-Detail](Master-Detail.jpg)
-* 数据绑定(通过DataRelation)
+### 1.2.2 表格数据绑定(通过DataRelation)
 
 ```csharp
 DataSet dsAB ;
@@ -21,6 +21,24 @@ gridControlAccount.DataSource = dsAB.Tables[0];
 //gridViewRelate是从表视图，主表视图在数据绑定的时候已经创建好列了
 gridViewRelate.PopulateColumns(dsAB.Tables[1]);
 ```
+
+### 1.2.3 模型数据绑定
+```csharp
+
+//把Level的名称更改为Items
+public class Account
+{
+    publis string Name{get;set;}
+    [DisplayName("账单列表")]
+    publis List<Bill> Items{get;set;}
+}
+
+List<Account> account;
+gridControlAccount.DataSource=account;
+
+```
+
+
 **注意：** 在数据绑定的时候，DataRelation的名称要和新建的Level名称一样
 ## 列合并
 
