@@ -8,6 +8,10 @@ factory.UserName = user;
 factory.Password = pass;
 factory.VirtualHost = vhost;
 factory.HostName = hostName;
+//设置异常重连
+factory.AutomaticRecoveryEnabled = true;
+//设置异常重连时间间隔
+factory.NetworkRecoveryInterval = TimeSpan.FromSeconds(10);
 IConnection conn = factory.CreateConnection();
 
 //创建连接方式2

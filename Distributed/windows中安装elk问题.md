@@ -114,7 +114,7 @@ output {
 server.port: 5601
 server.host: "0.0.0.0"
 elasticsearch.url: "http://localhost:9200"
-#这个是默认的配置，把index更改为其他的时候会异常
+#这个是默认的配置，把index更改为已存在的索引的时候会异常
 kibana.index: ".kibana"
 elasticsearch.username: "elastic"
 elasticsearch.password: "******"

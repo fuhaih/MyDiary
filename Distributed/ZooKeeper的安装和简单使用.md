@@ -74,6 +74,9 @@ public class Watcher : IWatcher
 ```
 
 ```csharp
+//构造函数中的sessiontimeout是用来设置会话超时的
+//客户端会不断发送心跳包给zookeeper，更新会话超时，如果超过sessiontimeout还没有接受到心跳，表示已经断开连接
+//默认的Session超时时间是在2 * tickTime ~ 20 * tickTime，tickTime可以在zookeeper的配置文件中进行配置，
 ZooKeeper zk = new ZooKeeper("127.0.0.1:2181", new TimeSpan(0, 0, 0, 50000), new Watcher());
 //判断root节点是否存在，不存在就创建一个
 var rootstate = zk.Exists("/root", true);
