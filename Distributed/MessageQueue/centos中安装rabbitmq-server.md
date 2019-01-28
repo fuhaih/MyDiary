@@ -17,13 +17,15 @@
 rabbitmq-server 安装后是默认启动了插件的，如果插件关闭，是无法开启rabbitmq-server的控制台服务的。
 ## 开启服务
 rabbitmq安装的时候默认不是以守护进程的方式启动服务的，可以执行以下命令让mq开机启动
-```vim shell
+```sh
 [root@izm5e944c3bh8eikqxjle5z ~]# chkconfig rabbitmq-server on
 ```
 以管理员身份启动服务
-```vim shell
+```sh
 # 启动服务
 [root@izm5e944c3bh8eikqxjle5z ~]# /sbin/service rabbitmq-server start
+# 直接以守护进程方式启动rabbitmq
+[root@izm5e944c3bh8eikqxjle5z ~]# /sbin/service rabbitmq-server -detached
 # 关闭服务
 [root@izm5e944c3bh8eikqxjle5z ~]# /sbin/service rabbitmq-server stop
 ```
