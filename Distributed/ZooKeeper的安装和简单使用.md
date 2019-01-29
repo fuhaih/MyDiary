@@ -54,6 +54,58 @@ cd ..
 ./bin/zkServer.sh status
 ```
 
+# windows安装
+
+>配置
+
+window和linux的zookeeper都大同小异，安装前面的操作配置就行了。
+
+>windows服务
+
+要让zookeeper以windows服务的形式运行，需要用到[commons-daemon-1.0.15-bin-windows](http://archive.apache.org/dist/commons/daemon/binaries/windows/ )
+
+1、复制 commons-daemon-1.0.15-bin-windows/amd64/prunsrv.exe 至 zookeeper-3.4.8\bin目录
+
+2、复制 commons-daemon-1.0.15-bin-windows/prunmgr.exe 至 zookeeper-3.4.8\bin目录下
+
+3、添加ZOOKEEPER_SERVICE， ZOOKEEPER_HOME两个环境变量
+
+ZOOKEEPER_SERVICE：服务名称，不能包含中文。 
+ZOOKEEPER_HOME：zookeeper-3.4.8目录
+
+4、zkServerStop.cmd
+
+```cmd
+@echo off
+ setlocal
+ TASKLIST /svc | findstr /c:"%ZOOKEEPER_SERVICE%" > %ZOOKEEPER_HOME%\zookeeper_svc.pid
+ FOR /F "tokens=2 delims= " %%G IN (%ZOOKEEPER_HOME%\zookeeper_svc.pid) DO (
+    @set zkPID=%%G
+ )
+ taskkill /PID %zkPID% /T /F
+ del %ZOOKEEPER_HOME%/zookeeper_svc.pid
+ endlocal
+```
+
+5、新建一个批处理安装文件install.bat
+```cmd
+prunsrv.exe "//IS//%ZOOKEEPER_SERVICE%" ^
+        --DisplayName="Zookeeper (%ZOOKEEPER_SERVICE%)" ^
+        --Description="Zookeeper (%ZOOKEEPER_SERVICE%)" ^
+        --Startup=auto --StartMode=exe ^
+        --StartPath=%ZOOKEEPER_HOME% ^
+        --StartImage=%ZOOKEEPER_HOME%\bin\zkServer.cmd ^
+        --StopPath=%ZOOKEEPER_HOME%\ ^
+        --StopImage=%ZOOKEEPER_HOME%\bin\zkServerStop.cmd ^
+        --StopMode=exe --StopTimeout=5 ^
+        --LogPath=%ZOOKEEPER_HOME% --LogPrefix=zookeeper-wrapper ^
+        --PidFile=zookeeper.pid --LogLevel=Info --StdOutput=auto --StdError=auto
+```
+
+6、以管理员身份运行install.bat，然后在服务中启动安装好的zookeeper服务
+
+7、sc delete 服务名称  来删除服务
+
 # c#中使用
 ## 安装驱动
 

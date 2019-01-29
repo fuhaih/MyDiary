@@ -121,13 +121,25 @@ GO
 
 >READ_UNCOMMITTED
 
+    未提交读
+
 >READ_COMMITED
 
+    已提交读
+    该隔离级别的行为受到read_committed_snapshot参数的影响
 >REPEATABLE_READ
 
+    可重复读
 >SERLALIZABLE
 
+    可序列化
+>snapshot
+
+    快照
+
 # 4、数据库索引
+
+
 
 # 5、数据库设计
 
