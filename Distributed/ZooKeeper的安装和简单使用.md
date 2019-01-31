@@ -62,6 +62,8 @@ window和linux的zookeeper都大同小异，安装前面的操作配置就行了
 
 >windows服务
 
+**注意：** zookeeper路径最好不要有空格和中文
+
 要让zookeeper以windows服务的形式运行，需要用到[commons-daemon-1.0.15-bin-windows](http://archive.apache.org/dist/commons/daemon/binaries/windows/ )
 
 1、复制 commons-daemon-1.0.15-bin-windows/amd64/prunsrv.exe 至 zookeeper-3.4.8\bin目录
