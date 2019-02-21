@@ -119,6 +119,8 @@ GO
 
 ## 3.2、事务的隔离级别
 
+[sql server 官网文档 SET TRANSACTION ISOLATION LEVEL (Transact-SQL)](https://docs.microsoft.com/zh-cn/sql/t-sql/statements/set-transaction-isolation-level-transact-sql?view=sql-server-2017)
+
 >READ_UNCOMMITTED
 
     未提交读

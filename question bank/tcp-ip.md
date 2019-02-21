@@ -60,6 +60,12 @@ FIN是在之前所有排队数据都已经发送后才被发送出去的，而�
 
 >多路复用(iocp)和完成端口（SocketAsyncEventArgs）
 
+>NetworkStream
+
+>心跳包和Socket.Poll方法
+
+
+
 >SendFile方法
 
     .Net Socket中的SendFile方法在底层使用了TransmitFile API进行文件的高效传输，它允许在套接字连接上发送一个打开的文件，不用把文件信息读入内存再进行传输。不过需要处理好粘包问题。
