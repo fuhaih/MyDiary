@@ -1,0 +1,66 @@
+<deadlock>
+ <victim-list>
+  <victimProcess id="processb63294188" />
+ </victim-list>
+ <process-list>
+  <process id="processb63294188" taskpriority="0" logused="0" waitresource="PAGE: 13:1:57787615 " waittime="2361" ownerId="5506473842" transactionname="SELECT" lasttranstarted="2019-01-16T14:15:36.757" XDES="0x20754dda60" lockMode="S" schedulerid="9" kpid="6152" status="suspended" spid="88" sbid="0" ecid="0" priority="0" trancount="0" lastbatchstarted="2019-01-16T14:15:36.753" lastbatchcompleted="2019-01-16T14:15:36.753" lastattention="1900-01-01T00:00:00.753" clientapp=".Net SqlClient Data Provider" hostname="HQEMSVR01" hostpid="9740" loginname="sa" isolationlevel="read committed (2)" xactid="5506473842" currentdb="13" lockTimeout="4294967295" clientoption1="671088672" clientoption2="128056">
+   <executionStack>
+    <frame procname="adhoc" line="1" sqlhandle="0x020000004d2694086a025e9a959a7df1a8fbd6cfa528f8910000000000000000000000000000000000000000">
+SELECT TOP 1000 [F_BuildID]
+                                              ,[F_MeterID]
+                                              ,[F_MeterParamID]
+                                              ,[F_CollectTime]
+                                              ,[F_ReceiveTime]
+                                              ,[F_Data]
+                                              ,[F_State]
+                                              ,[F_Manual]
+                                              ,[F_ofAddValue]
+                                          FROM [TTBEMS_RecordData].[dbo].[T_OV_RecordData_Newest]
+                                          WHERE F_BuildID='310112A004'  AND F_MeterParamID=22    </frame>
+   </executionStack>
+   <inputbuf>
+SELECT TOP 1000 [F_BuildID]
+                                              ,[F_MeterID]
+                                              ,[F_MeterParamID]
+                                              ,[F_CollectTime]
+                                              ,[F_ReceiveTime]
+                                              ,[F_Data]
+                                              ,[F_State]
+                                              ,[F_Manual]
+                                              ,[F_ofAddValue]
+                                          FROM [TTBEMS_RecordData].[dbo].[T_OV_RecordData_Newest]
+                                          WHERE F_BuildID='310112A004'  AND F_MeterParamID=22   </inputbuf>
+  </process>
+  <process id="process170fda8188" taskpriority="0" logused="3033968" waitresource="PAGE: 13:1:14159686 " waittime="2361" ownerId="5506471503" transactionname="BULK INSERT" lasttranstarted="2019-01-16T14:15:35.960" XDES="0xc34ce96a8" lockMode="IX" schedulerid="38" kpid="10536" status="suspended" spid="52" sbid="0" ecid="0" priority="0" trancount="3" lastbatchstarted="2019-01-16T14:15:35.950" lastbatchcompleted="2019-01-16T14:15:35.950" lastattention="2019-01-16T14:15:29.780" clientapp=".Net SqlClient Data Provider" hostname="HQEMSVR02" hostpid="6636" loginname="sa" isolationlevel="read committed (2)" xactid="5506471503" currentdb="13" lockTimeout="4294967295" clientoption1="673316896" clientoption2="128056">
+   <executionStack>
+    <frame procname="TTBEMS_RecordData.dbo.TR_RecordData_Insert_310112A004" line="29" stmtstart="2606" stmtend="3324" sqlhandle="0x03000d005c15fa51f7a03301e3a6000000000000000000000000000000000000000000000000000000000000">
+update T_OV_RecordData_Newest set F_CollectTime = @F_CollectTime,F_ReceiveTime = @F_ReceiveTime
+				,F_Data= @F_Data,F_State = @F_State,F_Manual = @F_Manual,F_ofAddValue = @F_ofAddValue
+				 from T_OV_RecordData_Newest 
+				where F_BuildID = @F_BuildID and F_MeterID = @F_MeterID and F_MeterParamID = @F_MeterParamID and F_CollectTime &lt; @F_CollectTime    </frame>
+    <frame procname="adhoc" line="1" sqlhandle="0x020000004d8bcf303a8c438906dbfe31c57d4bd72776ed570000000000000000000000000000000000000000">
+insert bulk TTBEMS_RecordData.dbo.T_OV_RecordData_310112A004 ([F_BuildID] Char(10) COLLATE Chinese_PRC_CI_AS, [F_MeterID] Char(14) COLLATE Chinese_PRC_CI_AS, [F_MeterParamID] SmallInt, [F_CollectTime] DateTime, [F_ReceiveTime] DateTime, [F_Data] Decimal(18,3), [F_State] Int, [F_Manual] VarChar(50) COLLATE Chinese_PRC_CI_AS, [F_ofAddValue] Decimal(18,3), [F_ofBuildID] VarChar(50) COLLATE Chinese_PRC_CI_AS, [F_ofMeterID] VarChar(50) COLLATE Chinese_PRC_CI_AS, [F_ofMeterParamID] VarChar(50) COLLATE Chinese_PRC_CI_AS) with (FIRE_TRIGGERS)    </frame>
+   </executionStack>
+   <inputbuf>
+insert bulk TTBEMS_RecordData.dbo.T_OV_RecordData_310112A004 ([F_BuildID] Char(10) COLLATE Chinese_PRC_CI_AS, [F_MeterID] Char(14) COLLATE Chinese_PRC_CI_AS, [F_MeterParamID] SmallInt, [F_CollectTime] DateTime, [F_ReceiveTime] DateTime, [F_Data] Decimal(18,3), [F_State] Int, [F_Manual] VarChar(50) COLLATE Chinese_PRC_CI_AS, [F_ofAddValue] Decimal(18,3), [F_ofBuildID] VarChar(50) COLLATE Chinese_PRC_CI_AS, [F_ofMeterID] VarChar(50) COLLATE Chinese_PRC_CI_AS, [F_ofMeterParamID] VarChar(50) COLLATE Chinese_PRC_CI_AS) with (FIRE_TRIGGERS)   </inputbuf>
+  </process>
+ </process-list>
+ <resource-list>
+  <pagelock fileid="1" pageid="57787615" dbid="13" subresource="FULL" objectname="TTBEMS_RecordData.dbo.T_OV_RecordData_Newest" id="lock198256b380" mode="IX" associatedObjectId="72057594038910976">
+   <owner-list>
+    <owner id="process170fda8188" mode="IX" />
+   </owner-list>
+   <waiter-list>
+    <waiter id="processb63294188" mode="S" requestType="wait" />
+   </waiter-list>
+  </pagelock>
+  <pagelock fileid="1" pageid="14159686" dbid="13" subresource="FULL" objectname="TTBEMS_RecordData.dbo.T_OV_RecordData_Newest" id="lockf0c35e280" mode="SIU" associatedObjectId="72057594038910976">
+   <owner-list>
+    <owner id="processb63294188" mode="S" />
+   </owner-list>
+   <waiter-list>
+    <waiter id="process170fda8188" mode="IX" requestType="convert" />
+   </waiter-list>
+  </pagelock>
+ </resource-list>
+</deadlock>
