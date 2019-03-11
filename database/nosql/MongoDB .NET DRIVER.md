@@ -79,3 +79,15 @@ public async Task<UpdateResult> UpdateNode(string taskID, string subTaskID, Node
 ```
 ArrayFilters只有3.6及以上版本有
 
+## 包含ObjectId对象的序列化和反序列化
+
+```csharp
+//序列化BsonExtensionMethods的ToJson扩展方法方法
+
+Temple temple=new Temple(_id=new ObjectId(idstring);
+string json=temple.ToJson();
+
+//反序列化
+Temple temple=BsonSerializer.Deserialize<Temple>(json);
+
+```
