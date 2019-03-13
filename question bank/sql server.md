@@ -33,6 +33,19 @@
 
 >union 和union all区别，lef join，not exists
 
+
+联合多个条件进行删除或者查询操作
+
+```sql
+delete tb1 from table tb1
+join (
+  select 'fds' as code,1 as yr,1 as id
+  union all 
+  select 'sd',1,1
+) tb2
+on tb1.code=tb2.code and tb1.yr=tb2.yr and tb1.id=tb2.id
+```
+
 # 2、锁
 
 ## 2.1、关于锁的几个概念
