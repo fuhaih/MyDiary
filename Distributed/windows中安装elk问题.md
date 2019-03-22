@@ -7,6 +7,8 @@
 1、索引ttl
 
 给索引添加ttl，设置过期时间
+
+
 # 安装logstash
 
 1、下载解压[logstash](https://www.elastic.co/downloads/logstash)
@@ -168,6 +170,8 @@ http://localhost:5601
 5、[security settings in Kibana](https://www.elastic.co/guide/en/kibana/current/security-settings-kb.html#security-settings-kb)
 
 用户名密码为：elastic ******
+
+
 # 其他
 >服务问题
 
