@@ -145,6 +145,8 @@ GO
 
 >持久性（Durability）
 
+
+
 ## 3.2、事务的隔离级别
 
 [sql server 官网文档 SET TRANSACTION ISOLATION LEVEL (Transact-SQL)](https://docs.microsoft.com/zh-cn/sql/t-sql/statements/set-transaction-isolation-level-transact-sql?view=sql-server-2017)
@@ -157,15 +159,31 @@ GO
 
     已提交读
     该隔离级别的行为受到read_committed_snapshot参数的影响
+    read_committed_snapshot参数决定Read Committed隔离级别是使用行版本控制事务的读操作，还是使用加共享锁来控制事务的读操作
+    如果设置选项READ_COMMITTED_SNAPSHOT为OFF，那么事务在执行读操作时申请共享锁，阻塞其他事务的写操作；
+    如果设置选项READ_COMMITTED_SNAPSHOT为ON，那么事务在执行读操作时使用Row Versioning，不会申请共享锁，不会阻塞其他事务的写操作;
+
 >REPEATABLE_READ
 
     可重复读
+    事务会持有Shared Lock，直到事务结束（提交或回滚）
 >SERLALIZABLE
 
-    可序列化
+    事务会持有范围Shared Lock（Range Lock），锁定一个范围，在事务活跃期间，其他事务不允许在该范围中进行更新（Insert 或 delete）操作；
 >snapshot
 
     快照
+
+## 数据库高并发下会产生的问题
+
+>脏读
+
+
+>不可重复读
+
+
+>幻读
+
 
 # 4、数据库索引
 
