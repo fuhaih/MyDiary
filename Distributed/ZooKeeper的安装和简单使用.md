@@ -60,6 +60,14 @@ cd ..
 
 window和linux的zookeeper都大同小异，安装前面的操作配置就行了。
 
+
+window是使用cmd后缀的文件，linux使用的是sh后缀的文件，window系统中需要修改一下zkEnv.cmd
+
+添加如下信息：
+
+set JAVA=C:\Program Files\Java\jre1.8.0_191\bin\java
+set JAVA_HOME=C:\Program Files\Java\jre1.8.0_191
+
 >windows服务
 
 **注意：** zookeeper路径最好不要有空格和中文
