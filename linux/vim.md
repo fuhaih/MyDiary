@@ -29,3 +29,7 @@ vim -r /etc/mongod.conf
 # 恢复完成后可以删除swp文件
 rm /etc/.mongod.conf.swp
 ```
+
+## recording
+当命令行显示recording时，说明已经进入了vim的录制宏的模式下。这种模式下vim会记录你所有的操作，直到按q退出。
+

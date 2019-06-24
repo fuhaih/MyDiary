@@ -10,6 +10,13 @@ $ vim
  f-b for $VIMRUNTIME: "/usr/share/vim/vim74"
 ```
 通过vim的version命令能看到vim的配置文件.vimrc路径，这里有三个路径，同时vim还支持vi的.exrc配置文件
+
+**注意：**
+
+`/`是根目录，`~`是家目录，每个用户都有一个家目录    
+root的家目录在/root下，其他用户家目录是在/home/username下   
+`ls -a /root`能看到root下所有目录和文件
+
 # 插件管理器vundle
 >下载并安装Vundle  
 
