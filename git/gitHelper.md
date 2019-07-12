@@ -159,4 +159,17 @@ HEAD^是指把版本库复位到当前HEAD之前的那个节点上，把HEAD这�
     
     :wq
 
+在修改了.gitignore文件后，需要清除缓存才能使新的ignore生效
+
+```bash
+# 注意 . 号
+git rm -r --cached . 
+
+# 把.gitignore修改提交推送
+git add -A
+git commit -m 'update ignore'
+git push origin master
+```
+
+
 

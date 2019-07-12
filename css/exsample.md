@@ -66,3 +66,54 @@
 ```
 
 ![效果](absolute.jpg)
+> tooltip效果
+
+<style>
+  .tooltip .desc {
+      height:20px;
+      display: block;
+      position:relative;
+  }
+  .tooltip .desc p {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .tooltip .desc:before {
+    content: attr(data-desc);
+    display: none;
+    /* border: 1px solid #C3C3C3; */
+    position: absolute;
+    bottom: 40px;
+    background: black;
+    z-index: 10000;
+    opacity: 0.6;
+    color: white;
+    padding: 15px 15px;
+    border-radius: 10px;
+    width:100%;
+    border-radius: 8px;
+  }
+  .tooltip .desc:after{
+    content: "";
+    display: none;
+    position: absolute;
+    border-top: 20px solid black;
+    border-left: 15px solid transparent;
+    bottom: 20px;
+    left: 40px;
+    opacity: 0.6;
+    border-right: 15px solid transparent;
+  }
+  .tooltip .desc:hover:before {
+    display: block;
+  } 
+  .tooltip .desc:hover:after {
+    display: block;
+  } 
+</style>
+<div class="tooltip" style="width:400px;margin: 120px auto auto 40px">
+  <div class="desc" data-desc="描述：测试描述信息的信息的四季豆is金佛ID瑟吉欧if就打死傲娇浮动is阿奇偶if的数据OAif激动死傲娇佛ID是数据都筛分机度搜为金佛你打算">
+    <p>描述：测试描述信息的信息的四季豆is金佛ID瑟吉欧if就打死傲娇浮动is阿奇偶if的数据OAif激动死傲娇佛ID是数据都筛分机度搜为金佛你打算</p>
+  </div>
+</div>
