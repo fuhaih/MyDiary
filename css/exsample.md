@@ -67,7 +67,7 @@
 
 ![效果](absolute.jpg)
 > tooltip效果
-
+```css
 <style>
   .tooltip .desc {
       height:20px;
@@ -112,8 +112,11 @@
     display: block;
   } 
 </style>
+```
+```html
 <div class="tooltip" style="width:400px;margin: 120px auto auto 40px">
   <div class="desc" data-desc="描述：测试描述信息的信息的四季豆is金佛ID瑟吉欧if就打死傲娇浮动is阿奇偶if的数据OAif激动死傲娇佛ID是数据都筛分机度搜为金佛你打算">
     <p>描述：测试描述信息的信息的四季豆is金佛ID瑟吉欧if就打死傲娇浮动is阿奇偶if的数据OAif激动死傲娇佛ID是数据都筛分机度搜为金佛你打算</p>
   </div>
 </div>
+```

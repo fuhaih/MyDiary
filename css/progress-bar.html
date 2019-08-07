@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>progress-bar</title>
+
+    <style>
+#application_wrapper4 #speed_wrapper{
+    margin:30px 0 0 0 ;
+    position:relative;;
+    height:20px;
+    background:#bbb;
+    cursor:pointer;
+    border-radius:20px;
+}
+#speed_content{
+    position:absolute;
+    top:0;
+    left:0;
+    width:0%;
+    height:100%;
+    background:#337ab7;
+    border-radius:20px;
+}
+#speed_handle{
+    color:#fff;
+    text-align:center;
+    border: 1px solid #337ab7;
+    position:absolute;
+    top:-4px;
+    left:0;
+    width:28px;
+    height:28px;
+    line-height:28px;
+    border-radius:50%;
+    background:#41dbdc;
+    cursor:pointer;
+}
+#steep_text{
+    position: absolute;
+    top: -20px;
+    left: 0;
+    text-align:center;
+}
+    </style>
+</head>
+
+<body>
+<div style="width:400px;margin: 120px auto auto 40px" id="application_wrapper4">
+    <div id='speed_wrapper'>
+        <p id='steep_text'></p>
+        <div id='speed_content'></div>
+        <span id='speed_handle'>></span>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <title>rotateMenu</title>
+
+    <style type="text/css">
+      * {
+padding: 0;
+margin: 0; }
+
+.menu {
+position: absolute;
+width: 40px;
+height: 40px;
+right: 10px;
+bottom: 10px;
+transform: translateZ(0px);
+/* -webkit-filter: url("#filt");*/ }
+.menu.active .subItem li:nth-child(1) {
+  transform: rotate(-90deg); }
+  .menu.active .subItem li:nth-child(1) .item .content {
+    transform: rotate(90deg); }
+.menu.active .subItem li:nth-child(2) {
+  transform: rotate(-120deg); }
+  .menu.active .subItem li:nth-child(2) .item .content {
+    transform: rotate(120deg); }
+.menu.active .subItem li:nth-child(3) {
+  transform: rotate(-150deg); }
+  .menu.active .subItem li:nth-child(3) .item .content {
+    transform: rotate(150deg); }
+.menu.active .subItem li:nth-child(4) {
+  transform: rotate(-180deg); }
+  .menu.active .subItem li:nth-child(4) .item .content {
+    transform: rotate(180deg); }
+.menu.active .subItem li .item {
+  transform: translate(100px); }
+.menu.active .button {
+  transform: rotate(720deg); }
+.menu .button {
+  background: #e91e63;
+  color: #fff;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  transition: all 0.38s; }
+.menu .subItem {
+  position: absolute; }
+  .menu .subItem li {
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    list-style: none; }
+    .menu .subItem li:nth-child(1) {
+      transform: rotate(-90deg); }
+      .menu .subItem li:nth-child(1) .item {
+        transition-delay: 0ms; }
+        .menu .subItem li:nth-child(1) .item .content {
+          transition-delay: 0ms;
+          transform: rotate(810deg); }
+    .menu .subItem li:nth-child(2) {
+      transform: rotate(-120deg); }
+      .menu .subItem li:nth-child(2) .item {
+        transition-delay: 100ms; }
+        .menu .subItem li:nth-child(2) .item .content {
+          transform: rotate(840deg);
+          transition-delay: 100ms; }
+    .menu .subItem li:nth-child(3) {
+      transform: rotate(-150deg); }
+      .menu .subItem li:nth-child(3) .item {
+        transition-delay: 200ms; }
+        .menu .subItem li:nth-child(3) .item .content {
+          transform: rotate(870deg);
+          transition-delay: 200ms; }
+    .menu .subItem li:nth-child(4) {
+      transform: rotate(-180deg); }
+      .menu .subItem li:nth-child(4) .item {
+        transition-delay: 300ms; }
+        .menu .subItem li:nth-child(4) .item .content {
+          transform: rotate(900deg);
+          transition-delay: 300ms; }
+    .menu .subItem li .item {
+      border-radius: 50%;
+      background: #e91e63;
+      color: #fff;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition-property: all;
+      transition-duration: 0.38s; }
+      .menu .subItem li .item .content {
+        transition-property: all;
+        transition-duration: 0.38s; }
+
+  </style>
+</head>
+
+<body>
+<div class="menu active">
+  <ul class="subItem">
+    <li>
+      <div class="item">
+        <div class="content">
+          1
+        </div>
+      </div>
+    </li>
+    <li>
+      <div class="item">
+        <div class="content">
+          2
+        </div>
+      </div>
+    </li>
+    <li>
+      <div class="item">
+        <div class="content">
+          3
+        </div>
+      </div>
+    </li>
+    <li>
+      <div class="item">
+        <div class="content">
+          4
+        </div>
+      </div>
+    </li>
+  </ul>
+  <div class="button">
+    +
+  </div>
+</div>
+
+<svg>
+  <defs>
+    <filter id="filt">
+      <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="10"></feGaussianBlur>
+      <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -7" result="filt"></feColorMatrix>
+      <feBlend in2="filt" in="SourceGraphic" result="mix"></feBlend>
+    </filter>
+  </defs>
+</svg>
+<script>
+$(function(){
+  $('.button').click(function(){
+    $('.menu').toggleClass('active');
+  })
+})
+</script>
+</body>
+</html>

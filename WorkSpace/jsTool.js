@@ -2,11 +2,10 @@
 *json格式的datetime转为js格式的datetime
 */
 function timeJson2Date(time) {
-    if (time != null) {
-        var date = new Date(parseInt(time.replace("/Date(", "").replace(")/", ""), 10));
-        return date;
-    }
-    return null;
+  var regex = new RegExp("/Date\\((\\d+)\\)/");
+  var matchs = regex.exec(json);
+  var mseconds = parseInt(matchs[1]);
+  return new Date(mseconds);
 }
 
 // 对Date的扩展，将 Date 转化为指定格式的String
