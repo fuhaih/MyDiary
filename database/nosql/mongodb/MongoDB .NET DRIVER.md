@@ -10,6 +10,15 @@ var collection = database.GetCollection<BsonDocument>("bar");
 //GridFS
 var bucket = new GridFSBucket(database);
 ```
+
+## 包含子类
+
+使用BsonKnownTypes特性
+```csharp
+ [BsonKnownTypes(typeof(RedirectInfo), typeof(PluralFillInfo)
+        , typeof(FillInfo),typeof(UploadInfo),typeof(DwonloadInfo),typeof(AnalysisInfo))]
+```
+
 ## 查找文件
 ```csharp
 IGridFSBucket bucket;
