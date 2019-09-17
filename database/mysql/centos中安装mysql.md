@@ -1,9 +1,11 @@
 ## 下载mysql的repo源的rpm软件包
 
-具体版本连接看[官网](https://dev.mysql.com/downloads/repo/yum/)
-
+具体版本连接看[官网](https://dev.mysql.com/downloads/repo/yum/)或者[仓库列表](http://repo.mysql.com)
+```sh
     $ wget http://repo.mysql.com/mysql80-community-release-el7-3.noarch.rpm
-
+    # 5.7版本  
+    $ wget http://repo.mysql.com/mysql57-community-release-el7.rpm
+```
 ## 安装mysql80-community-release-el7-3.noarch.rpm包
 
     sudo rpm -ivh mysql80-community-release-el7-3.noarch.rpm
@@ -18,6 +20,8 @@
     #设置服务开机启动
     $ systemctl enable mysqld.service
 ## 重置root密码
+
+
 在安装了mysql后，默认有个root用户,密码为空
 ```bash
 # 无密码
@@ -30,6 +34,42 @@ mysql >use mysql;
 mysql > update user set password=password('123456') where user='root';
 # 刷新权限
 mysql > flush privileges;
+```
+
+首次进入mysql可能会报错(5.7版本)
+
+**解决方案1**
+
+通过安全模式来进行密码修改
+```sh
+# 1. Stop mysql:
+systemctl stop mysqld
+# 2. Set the mySQL environment option 
+systemctl set-environment MYSQLD_OPTS="--skip-grant-tables"
+# 3. Start mysql usig the options you just set
+systemctl start mysqld
+# 4. Login as root
+mysql -u root
+# 5. Update the root user password with these mysql commands
+mysql> UPDATE mysql.user SET authentication_string = PASSWORD('MyNewPassword')    
+-> WHERE User = 'root' AND Host = 'localhost';
+mysql> FLUSH PRIVILEGES;mysql> quit
+# 6. Stop mysqlsystemctl stop mysqld
+# 7. Unset the mySQL envitroment option so it starts normally next time
+systemctl unset-environment MYSQLD_OPTS
+# 8. Start mysql normally:
+systemctl start mysqld
+Try to login using your new password:7. mysql -u root -p
+```
+
+**解决方案2**   
+mysql在安装之后，root用户会有一个临时密码，可以用该密码登录到Mysql，进行密码修改
+
+```sh
+#安装完成后获取自动生成的临时密码
+grep "password" /var/log/mysqld.log
+#修改密码
+ALTER USER USER() IDENTIFIED BY '新密码';
 ```
 
 ## 8.0及之后版本

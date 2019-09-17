@@ -45,7 +45,7 @@ mongorestore 最后的一个参数，设置备份数据所在位置，例如：c
 如果恢复到当前的系统的mongodb中，可以直接使用该命令
 
 ```
->mongoresore --dir [dump文件路径]
+>mongorestore --dir [dump文件路径]
 ```
 
 该命令会把dump文件路径下所有的数据恢复到当前mongodb数据库中。
@@ -76,3 +76,29 @@ mongod -f D:\MongoDB\3.6\mongod.cfg --reinstall --serviceName "MongoDB"
 ```
 net start MongoDB
 ```
+
+# windows中 mongodb数据备份定时计划
+
+用到bat脚本和mongodb的数据备份命令 mongodump
+
+```sh
+mongodump -h dbhost -d dbname -o dbdirectory
+```
+
+## 创建bat脚本
+
+
+新建一个mongodb backup.bat 文件
+
+```bat
+cd C:\Program Files\MongoDB\Server\3.6\bin
+mongodump -o C:\MongoDB\backup
+```
+## 添加定时任务
+
+使用windows自带的任务计划程序来创建定时任务
+
+常规里 选择安全权限     
+触发器里 选择触发规则       
+操作里 选择bat脚本          
+条件里 去掉一些条件限制     
