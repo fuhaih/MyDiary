@@ -1,0 +1,1 @@
+wamp => windows + apache + mysql + php
