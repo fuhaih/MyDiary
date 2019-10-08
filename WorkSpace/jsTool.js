@@ -2,7 +2,7 @@
 *json格式的datetime转为js格式的datetime
 */
 function timeJson2Date(time) {
-  var regex = new RegExp("/Date\\((\\d+)\\)/");
+  var regex = new RegExp("/Date\\((-?\\d+)\\)/");
   var matchs = regex.exec(json);
   var mseconds = parseInt(matchs[1]);
   return new Date(mseconds);
