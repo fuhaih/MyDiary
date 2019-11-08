@@ -73,3 +73,4 @@ Internet Information Services->万维网服务->应用程序开发功能->CGI
 
 iis中新建一个网站，监听8088，目录指向D:\wwwroot
 浏览器打开localhost:8088\hello.php
+

@@ -1,5 +1,5 @@
 # 版本问题
-使用wamp安装，存在很多版本问题  
+使用wamp(window 、Apache、mysql、php)安装，存在很多版本问题  
 1、php版本  
 php7.2之后的版本优化问题，对参数进行比较严格的限制，而edusoho中的参数传递不是很严谨，所以在7.2及以上的版本中运行会报错  
 2、mysql版本    
@@ -99,6 +99,8 @@ Define SRVROOT "c:/Apache24"
 >mod_fcgid
 
 下载对应版本的`mod_fcgid`后，把`mod_fcgid.so`文件放在Apache目录下的`modules`文件夹下。
+
+[下载地址](https://www.apachelounge.com/download/)
 
 >模块配置
 
@@ -291,6 +293,56 @@ Listen 8082
 </VirtualHost>
 ```
 2.4版本必须加上`Require all granted`,否则会出现权限异常`Forbidden You don't have permission to access this resource.`
+
+
+# 调试
+
+调试使用`xdebug`来进行调试。xdebug调试原理：
+
+Apache ——(fastcgi)——> php ——(xdebug)——> vscode
+
+php开发的流程大概就是：
+
+* http request 到达Apache
+
+* Apache通过fastcgi和php通讯，解析php
+
+* php通过xdebug来访问vscode进行调试。
+
+vscode中使用php-debug插件来调试php，该插件会监听9000端口，然后php在运行时会通过xdebug向vscode监听的9000端口发送消息来进行通讯调试。所以Apache、php和vscode都是独立的模块，通过不同协议进行互相通讯、调试。
+
+## xdebug配置
+1、这个需要先下载对应的php版本的xdebug
+
+[下载链接](https://xdebug.org/download.php)
+下载后发在php的`ext`文件夹目录下。
+
+版本的话需要对照下面两个参数。
+* Architecture：x64
+* Zend Extension Build: API320160303,NTS,VC14
+
+所以下载了`PHP 7.1 VC14 (64 bit)`版本，线程安全版是`PHP 7.1 VC14 TS (64 bit)`;
+
+这些信息可以通过`phpinfo()`获取到。
+
+
+2、在php中配置xdebug
+
+在php.ini末尾添加下列配置信息。
+```ini
+[XDebug]
+; XDEBUG Extension
+zend_extension=php_xdebug-2.7.2-7.1-vc14-nts-x86_64.dll
+xdebug.remote_enable = on
+xdebug.profiler_enable = on
+xdebug.profiler_enable_trigger = off
+xdebug.profiler_output_name = cachegrind.out.%t.%p
+xdebug.profiler_output_dir = "D:/WWW/tmp"
+xdebug.show_local_vars=0
+;启用远程调试
+xdebug.remote_autostart= 1
+```
+
 
 # 异常
 
