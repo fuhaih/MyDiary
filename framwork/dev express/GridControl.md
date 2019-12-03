@@ -120,6 +120,8 @@ gridViewMeter.FormatRules.Add(rule);
 
 # 给新增行的某一列设置默认值
 ```csharp
+// 当options是list格式时 ，使用BindingList，否则无法写入新增行。
+gridViewDetail.DataSource = new BindingList<QuestionOption>(options);
 //允许新增行
 gridViewDetail.OptionsBehavior.AllowAddRows = DefaultBoolean.True;
 //设置新增行位置
@@ -141,6 +143,19 @@ private void gridViewDetail_InitNewRow(object sender, InitNewRowEventArgs e)
     //给某一列赋初始值
     view.SetRowCellValue(e.RowHandle, view.Columns["F_OperationAction"], "ShutDown");
     view.SetRowCellValue(e.RowHandle, view.Columns["F_OperationMode"], "Manual");
+}
+
+//验证
+private void gridViewDetail_ValidatingEditor(object sender, DevExpress.XtraEditors.Controls.BaseContainerValidateEditorEventArgs e)
+{
+    if (gridViewOption.FocusedColumn.FieldName == "Content")
+    {
+        if (string.IsNullOrWhiteSpace(Convert.ToString(e.Value)))
+        {
+            e.Valid = false;
+            e.ErrorText = "选项不能为空";
+        }
+    }
 }
 ```
 

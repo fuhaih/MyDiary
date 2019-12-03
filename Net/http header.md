@@ -27,3 +27,31 @@ Access-Control-Allow-Headers: accept,x-requested-with,Content-Type
 Access-Control-Allow-Credentials: true
 ```
 请求资源->服务器返回资源->浏览器接收到资源，发现资源不同源，但是response header中包含了Access-Control-Allow-Origin，说明服务器允许该资源跨域访问，所以浏览器也就正常接收资源。
+
+>accept-ranges:bytes
+
+该请求头是在response中使用，表示客户端可以进行范围查询，该请求头一般用在文件下载中，进行范围查询可以支持断点下载。
+
+服务端加上`accept-range`后，客户端请求时可以带上`accept`头，请求通过`accept`头来访问时，服务器的头文件会包含`Content-Range`。
+
+请求流程：
+
+客户端请求api -> 服务端头 `accept-range: bytes` -> 客户端请求头`accept: 0-499` -> 服务端头 `content-accept: 0-499/1024`;`content-accept`后面的`/`的数值为文件的总长度。
+
+>Cookie 、Set-Cookie
+
+这两个是cookie操作相关的headers     
+Cookie是Request Headers   
+Set-Cookie是Response Headers    
+
+服务器端的HttpContext是可以进行cookie操作的，但是不会直接写到cookie里，cookie是保存在客户端的。
+当服务的进行cookie操作时，会在Set-Cookie中返回相应的信息，客户端接收到后，发现有`Set-Cookie` Response Headers,就会把里面的内容写入到cookie中。
+
+客户端每次访问时，都会根据domain等信息来查找可以发送过去的cookie，然后写入到`Cookie` Request Headers中。
+
+>Etag
+
+Etag、Last-Modified文件缓存相关的Response Headers     
+If-Non-Match、If-Modified-Since文件缓存相关的Request Headers 
+
+
