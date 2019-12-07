@@ -162,6 +162,8 @@ var corpus = JsonConvert.DeserializeObject<CorpusBase>(json,setting);
 
 >BadRequestResult
 
+方法：`BadRequest`
+
 错误请求      
 会返回400状态码
 ```csharp
@@ -172,11 +174,54 @@ public async Task<IHttpActionResult> GetBadRequestResult()
 }
 ```
 
+
+
 >InvalidModelStateResult
+
+模型验证异常，返回状态码400
+
+```csharp
+[Route("InvalidModelStateResult")]
+public async Task<IHttpActionResult> GetInvalidModelStateResult()
+{
+    ModelState.AddModelError("test", new Exception("test model error"));
+    return BadRequest(ModelState);
+}
+```
+返回信息
+```json
+{
+  "Message": "请求无效。",
+  "ModelState": {
+    "test": [
+      "test model error"
+    ]
+  }
+}
+```
 
 >BadRequestErrorMessageResult
 
+返回400状态码和Message信息
+```csharp
+[Route("BadRequestErrorMessageResult")]
+public async Task<IHttpActionResult> GetBadRequestErrorMessageResult()
+{
+    return BadRequest("BadRequestErrorMessageResult");
+}
+```
+
 >ConflictResult
+
+返回冲突状态码409，这个也可以使用StatusCodeResult来替换
+
+```csharp
+[Route("ConflictResult")]
+public async Task<IHttpActionResult> GetConflictResult()
+{
+    return Conflict();
+}
+```
 
 >NegotiatedContentResult
 
@@ -211,9 +256,32 @@ public async Task<IHttpActionResult> GetFormattedContentResult()
 
 >InternalServerErrorResult
 
+方法：`InternalServerError()`     
+返回状态码500和异常信息
+```csharp
+[Route("InternalServerErrorResult")]
+public async Task<IHttpActionResult> GetInternalServerErrorResult()
+{
+    return InternalServerError();
+}
+```
+
 >ExceptionResult
 
+方法：`InternalServerError(Exception exception)`    
+返回状态码500和异常信息,和`InternalServerErrorResult`类似，多了异常信息返回给前端
+```csharp
+[Route("ExceptionResult")]
+public async Task<IHttpActionResult> GetExceptionResult()
+{
+    return InternalServerError(new Exception("test error"));
+}
+```
+
 >NotFoundResult
+
+方法: `NotFound`
+
 当服务器没有该资源时，返回NotFoundResult，会给前端返回状态码404
 ```csharp
 [Route("NotFoundResult")]
@@ -225,15 +293,108 @@ public async Task<IHttpActionResult> GetNotFoundResult()
 
 >OkResult
 
+方法：`Ok`、`Ok<T>`     
+返回状态码：200 ,不会返回内容
+
+```csharp
+[Route("Ok")]
+public async Task<IHttpActionResult> GetOk()
+{
+    return Ok();
+}
+//返回有内容的200
+[Route("Ok")]
+public async Task<IHttpActionResult> GetOk()
+{
+    //默认是json格式的，所以结果和JsonResult相同
+    return Ok(AjaxResult<string>.Success("ok"));
+}
+```
+
+
 >OkNegotiatedContentResult
 
->RedirectResult
+>RedirectResult   
 
+返回状态码302     
+HTTP 302 Found 重定向状态码表明请求的资源被暂时的移动到了由Location 头部指定的 URL 上。浏览器会重定向到这个URL， 但是搜索引擎不会对该资源的链接进行更新 (In SEO-speak, it is said that the link-juice is not sent to the new URL)
 >RedirectToRouteResult
+
+同RedirectResult，返回302状态码并在Location 头部指定跳转URL 
+```csharp
+[Route("NotFoundResult", Name = "test")]
+public async Task<IHttpActionResult> GetNotFoundResult()
+{
+    return NotFound();
+}
+[Route("RedirectToRoute")]
+public async Task<IHttpActionResult> GetRedirectToRoute()
+{
+    //跳转到路由名为test的路由器，也就是方法GetNotFoundResult上。
+    return RedirectToRoute("test",null);
+}
+```
 
 >ResponseMessageResult
 
+和直接返回`HttpResponseMessage`效果一致。下面是使用`HttpResponseMessage`来返回json数据的例子，效果和JsonResult是一样的。
+
+返回Josn
+```csharp
+[Route("ResponseMessageResult")]
+public async Task<IHttpActionResult> GetResponseMessageResult()
+{
+    HttpResponseMessage respon = new HttpResponseMessage();
+    string json = JsonConvert.SerializeObject(AjaxResult<string>.Success("ok"));
+    respon.Content = new StringContent(json);
+    respon.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+    return ResponseMessage(respon);
+}
+```
+返回Stream
+```csharp
+[Route("filecache/{fileid}")]
+[HttpGet]
+public HttpResponseMessage GetFile(string fileid)
+{
+    
+    HttpResponseMessage resp = new HttpResponseMessage(HttpStatusCode.OK);
+    SourceFileInfo file = SourceFileManager.GetFiles(fileid);
+    var tag = Request.Headers.IfNoneMatch.FirstOrDefault();
+    string compare = string.Format("\"{0}\"", file.MD5);
+    if (tag != null && tag.Tag == compare)
+    {
+        resp = new HttpResponseMessage(HttpStatusCode.NotModified);
+        var code = resp.StatusCode;
+    }
+    else
+    {
+        resp = new HttpResponseMessage(HttpStatusCode.OK);
+    }
+    MemoryStream stream = new MemoryStream(file.Data);
+    resp.Content = new StreamContent(stream,3*1024*1024);//设置buffer-size ，否则传输速度会比较慢
+    resp.Content.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+    resp.Content.Headers.LastModified = file.Modified;
+    resp.Headers.ETag = new EntityTagHeaderValue(string.Format("\"{0}\"", file.MD5));
+    resp.Headers.CacheControl = CacheControlHeaderValue.Parse("public");
+    return resp;
+}
+```
+
 >StatusCodeResult
+
+方法：`StatusCode`
+
+返回状态码
+
+```csharp
+[Route("StatusCodeResult")]
+public async Task<IHttpActionResult> GetStatusCodeResult()
+{
+    //返回状态码400，这个和BadRequestResult的结果是一样的
+    return StatusCode(HttpStatusCode.BadRequest);
+}
+```
 
 >UnauthorizedResult
 

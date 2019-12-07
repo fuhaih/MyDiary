@@ -28,15 +28,15 @@ Access-Control-Allow-Credentials: true
 ```
 请求资源->服务器返回资源->浏览器接收到资源，发现资源不同源，但是response header中包含了Access-Control-Allow-Origin，说明服务器允许该资源跨域访问，所以浏览器也就正常接收资源。
 
->accept-ranges:bytes
+>Accept-Ranges:bytes
 
 该请求头是在response中使用，表示客户端可以进行范围查询，该请求头一般用在文件下载中，进行范围查询可以支持断点下载。
 
-服务端加上`accept-range`后，客户端请求时可以带上`accept`头，请求通过`accept`头来访问时，服务器的头文件会包含`Content-Range`。
+服务端加上`Accept-Ranges`后，客户端请求时可以带上`Range`头，请求通过`Range`头来访问时，服务器的头文件会包含`Content-Range`。
 
 请求流程：
 
-客户端请求api -> 服务端头 `accept-range: bytes` -> 客户端请求头`accept: 0-499` -> 服务端头 `content-accept: 0-499/1024`;`content-accept`后面的`/`的数值为文件的总长度。
+客户端请求api -> 服务端头 `Accept-Ranges: bytes` -> 客户端请求头`Range: 0-499` ->服务端返回206状态码，服务端头 `Content-Range: 0-499/1024`;`Content-Range`后面的`/`的数值为文件的总长度。
 
 >Cookie 、Set-Cookie
 

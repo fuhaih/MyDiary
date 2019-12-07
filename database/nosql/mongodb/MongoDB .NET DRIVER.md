@@ -19,6 +19,35 @@ var bucket = new GridFSBucket(database);
         , typeof(FillInfo),typeof(UploadInfo),typeof(DwonloadInfo),typeof(AnalysisInfo))]
 ```
 
+## 扩展信息
+
+当mongodb中新增一个字段时，模型类必须要添加上相应的字段，否则会报错。
+
+* 解决方案1：   
+使用`[BsonExtraElements]`特性     
+mongodb中没有匹配到字段的信息会放在`[BsonExtraElements]`特性标记的属性中
+
+
+```
+[BsonExtraElements]
+public BsonDocument array { get; set; }
+```
+* 方案2
+
+使用select new    
+相当于shell的$project     
+```csharp
+var client = new MongoClient(GlobalConfig.MongoDbConnectStr);
+var database = client.GetDatabase("test");
+var clCol = database.GetCollection<classesFixed>("classes");
+var result = clCol.AsQueryable().Select(m => new classesFixed
+{
+    enrollmentlist = m.enrollmentlist,
+    title = m.title,
+    _id = m._id
+}).ToList();
+```
+
 ## 查找文件
 ```csharp
 IGridFSBucket bucket;
@@ -100,3 +129,104 @@ string json=temple.ToJson();
 Temple temple=BsonSerializer.Deserialize<Temple>(json);
 
 ```
+
+## lookup操作
+>使用Lambada表达式进行操作
+
+```csharp
+string[] tags = new string[] { "一年级", "困难" };
+var client = new MongoClient(GlobalConfig.MongoDbConnectStr);
+var database = client.LASSTS();
+var colletion = database.Questions<ExamQuestions>();
+var sourceCol = database.Source<SourceGroup>();
+var query = from q in colletion.AsQueryable().AsEnumerable()
+            join s in sourceCol.AsQueryable()
+            on q.SourceID equals s._id
+            where tags.All(m => q.Tags.Contains(m)) && !s.Share && q.Authorization.Contains("S001T0002")
+            select q;
+List<ExamQuestions> result = query.Count() == 0 ? new List<ExamQuestions>() : query.ToList();
+```
+试题库ExamQuestions   
+资源库SourceGroup   
+关联关系 question.SourceID ---- source._id    
+需要注意，当要返回整个document时，需要使用`AsEnumerable`
+
+>使用linq进行操作
+
+classes
+```sh
+db.classes.insert( [
+   { _id: 1, title: "Reading is ...", enrollmentlist: [ "giraffe2", "pandabear", "artie" ], days: ["M", "W", "F"] },
+   { _id: 2, title: "But Writing ...", enrollmentlist: [ "giraffe1", "artie" ], days: ["T", "F"] }
+])
+```
+members
+```sh
+db.members.insert( [
+   { _id: 1, name: "artie", joined: new Date("2016-05-01"), status: "A" },
+   { _id: 2, name: "giraffe", joined: new Date("2017-05-01"), status: "D" },
+   { _id: 3, name: "giraffe1", joined: new Date("2017-10-01"), status: "A" },
+   { _id: 4, name: "panda", joined: new Date("2018-10-11"), status: "A" },
+   { _id: 5, name: "pandabear", joined: new Date("2018-12-01"), status: "A" },
+   { _id: 6, name: "giraffe2", joined: new Date("2018-12-01"), status: "D" }
+])
+```
+
+```csharp
+var client = new MongoClient(GlobalConfig.MongoDbConnectStr);
+var database = client.GetDatabase("test");
+var clCol = database.GetCollection<classes>("classes");
+var memberCol = database.GetCollection<members>("members");
+
+var pipeline = PipelineStageDefinitionBuilder.Lookup<classes,members,classes>(memberCol, "enrollmentlist", "name", "enrollee_info");
+
+var aggregate = clCol
+    .Aggregate()
+    .AppendStage(pipeline);
+var organizationsList = aggregate.ToList();
+```
+
+上诉方法对应的shell
+```sh
+db.classes.aggregate([
+   {
+      $lookup:
+         {
+            from: "members",
+            localField: "enrollmentlist",
+            foreignField: "name",
+            as: "enrollee_info"
+        }
+   }
+])
+```
+
+输出
+```sh
+{
+   "_id" : 1,
+   "title" : "Reading is ...",
+   "enrollmentlist" : [ "giraffe2", "pandabear", "artie" ],
+   "days" : [ "M", "W", "F" ],
+   "enrollee_info" : [
+      { "_id" : 1, "name" : "artie", "joined" : ISODate("2016-05-01T00:00:00Z"), "status" : "A" },
+      { "_id" : 5, "name" : "pandabear", "joined" : ISODate("2018-12-01T00:00:00Z"), "status" : "A" },
+      { "_id" : 6, "name" : "giraffe2", "joined" : ISODate("2018-12-01T00:00:00Z"), "status" : "D" }
+   ]
+}
+{
+   "_id" : 2,
+   "title" : "But Writing ...",
+   "enrollmentlist" : [ "giraffe1", "artie" ],
+   "days" : [ "T", "F" ],
+   "enrollee_info" : [
+      { "_id" : 1, "name" : "artie", "joined" : ISODate("2016-05-01T00:00:00Z"), "status" : "A" },
+      { "_id" : 3, "name" : "giraffe1", "joined" : ISODate("2017-10-01T00:00:00Z"), "status" : "A" }
+   ]
+}
+```
+
+>其他操作
+
+$mergeObjects 操作，可以merge关联的两个document   
+详情看[文档](https://docs.mongodb.com/manual/reference/operator/aggregation/lookup/index.html)
