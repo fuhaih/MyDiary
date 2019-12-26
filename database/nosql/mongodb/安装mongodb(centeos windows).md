@@ -110,4 +110,11 @@ mongod -f D:\MongoDB\mongod.cfg --install --serviceName "MongoDB"
 mongod -f D:\MongoDB\mongod.cfg --remove --serviceName "MongoDB"
 mongod -f D:\MongoDB\mongod.cfg --reinstall --serviceName "MongoDB"
 ```
+## 进入控制台
 
+```sh
+mongo 127.0.0.1:27017
+
+```
+
+默认端口号可以直接`mongo`命令，当修改过端口号时需要手写ip和端口号。
