@@ -262,3 +262,137 @@ var memberCol = database.GetCollection<members>("members");
 ```
 
 这里需要注意的是，mongodb用副本集模式来进行操作时，会用配置的连接连接到MongoDB，获取副本集的信息(_id,host等)，找到master，连接master来进行增删改操作，所以副本集在配置host时，要配置成`ip：port`格式，配置成`localhost:port`的话，获取副本集信息时就是返回`localhost:port`，直接连接`localhost:port`，会报错。
+
+## 读偏好配置
+
+副本集中`Primary`节点和`Secondary`节点都能进行读操作，如果从`Secondary`读取，可以扩大读取吞吐量。
+
+readPreference
+```yml
+
+primary：仅从primary进行读操作，缺点就是primary节点压力比较大，Secondary节点的资源也是挺浪费的
+
+primaryPreferred：默认是读取primary节点，当primary节点宕掉时，才读取Secondary节点，缺点跟primary一样。
+
+secondary：只读取secondary，缺点就是，当所有secondary都宕掉时，读取操作将异常。
+
+secondaryPreferred：默认读取secondary，当所有secondary宕掉时，读取primary
+
+```
+
+```csharp
+MongoClientSettings setting = new MongoClientSettings();
+setting.ReplicaSetName = "rs0";
+setting.ReadPreference = ReadPreference.SecondaryPreferred;
+setting.Servers = new List<MongoServerAddress>() {
+    new MongoServerAddress("192.168.68.36",27018),
+    new MongoServerAddress("192.168.68.36",27019),
+    new MongoServerAddress("192.168.68.36",27020)
+};
+var client = new MongoClient(setting);
+var database = client.GetDatabase("test");
+var clCol = database.GetCollection<classes>("classes");
+var memberCol = database.GetCollection<members>("members");
+```
+
+或者使用连接字符串
+
+```csharp
+var client = new MongoClient("mongodb://192.168.68.36:27018,192.168.68.36:27019,192.168.68.36:27020/?replicaSet=rs0&readPreference=secondaryPreferred&maxStalenessSeconds=120");
+var database = client.GetDatabase("test");
+var clCol = database.GetCollection<classes>("classes");
+var memberCol = database.GetCollection<members>("members");
+```
+`maxStalenessSeconds`最大过时时间，也就是当副本集secondary节点的数据落后于primary节点的时间，当超过最大过期时间时，会停止对secondary节点的读取。
+
+当选择了使用maxStalenessSeconds进行读操作的服务端，客户端会通过比较从节点和主节点的最后一次写时间来估计从节点的过期程度。客户端会把连接指向估计落后小于等于maxStalenessSeconds的从节点。
+
+`readPreferenceTags`通过节点的tags来对偏好进行设置。
+
+## 事务操作
+
+```csharp
+var client = new MongoClient(GlobalConfig.MongoDbConnectStr);
+var database = client.GetDatabase("test");
+var collection = database.GetCollection<Question>("Question");
+using (var session = client.StartSession())
+{
+    var transactionOptions = new TransactionOptions(
+    readPreference: ReadPreference.Primary,
+    readConcern: ReadConcern.Local,
+    writeConcern: WriteConcern.WMajority);
+    session.StartTransaction(transactionOptions);
+    try
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            //if (i == 1) throw new Exception("test_transaction");
+            Question question = new Question
+            {
+                Answers = null,
+                Name = "qtest" + i
+            };
+            //操作时必须带入session
+            collection.InsertOne(session,question);
+        }
+        session.CommitTransaction();
+    }
+    catch (Exception ex)
+    {
+        session.AbortTransaction();
+    }
+}
+```
+
+```csharp
+CancellationTokenSource source = new CancellationTokenSource();
+MongoClientSettings setting = new MongoClientSettings();
+setting.ConnectionMode = ConnectionMode.ReplicaSet;
+setting.ReplicaSetName = "rs0";
+setting.Servers = new List<MongoServerAddress>() {
+    new MongoServerAddress("192.168.68.36",27018),
+    new MongoServerAddress("192.168.68.36",27019),
+    new MongoServerAddress("192.168.68.36",27020)
+};
+var client = new MongoClient(setting);
+var database = client.GetDatabase("test");
+var collection = database.GetCollection<Question>("Question");
+using (var session = client.StartSession())
+{
+    var transactionOptions = new TransactionOptions(
+    readPreference: ReadPreference.Primary,//这里可以设置从secondary读，但是事务时只能从primary读
+    readConcern: ReadConcern.Local,
+    writeConcern: WriteConcern.WMajority);
+
+    var result = session.WithTransaction(
+    (s, ct) =>
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            //if (i == 1) throw new Exception("test_transaction");
+            Question question = new Question
+            {
+                Answers = null,
+                Name = "qtest" + i
+            };
+            //集合操作时，必须要把session带进去。
+            collection.InsertOne(s,question,cancellationToken: ct);
+        }
+        return "ok";
+    },
+    transactionOptions,
+    source.Token);
+}
+```
+
+**事务注意事项：**
+
+* writeConcern: WriteConcern.WMajority
+
+* readPreference: ReadPreference.Primary
+
+也就是只能从primary进行读取。
+
+* session
+
+在进行操作时需要带上session
