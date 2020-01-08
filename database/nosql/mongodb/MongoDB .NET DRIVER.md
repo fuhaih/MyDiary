@@ -225,6 +225,87 @@ db.classes.aggregate([
 }
 ```
 
+>pipeline
+
+pipeline管道可以用来对外链集合进行复杂处理，这里处了使用name字段来匹配外，还通过status字段来过滤members集合
+
+```csharp
+var client = new MongoClient(GlobalConfig.MongoDbConnectStr);
+var database = client.GetDatabase("test");
+var clCol = database.GetCollection<classes>("classes");
+var memberCol = database.GetCollection<members>("members");
+
+BsonDocument let = new BsonDocument {
+  new BsonElement("enrollment","$enrollmentlist")
+};
+
+var qfilter = new BsonDocument {
+    new BsonElement("$expr",new BsonDocument {
+        new BsonElement("$and",new BsonArray {
+            new BsonDocument("$eq",new BsonArray { "$name", "$$enrollment"}),
+            new BsonDocument("$eq",new BsonArray { "$status", "D"})
+        })
+    })
+};
+PipelineDefinition<members,members> lookuppipeline = new EmptyPipelineDefinition<members>()
+    .Match(qfilter);
+
+
+var pipeline = PipelineStageDefinitionBuilder.Lookup<classes,members, members,IEnumerable<members>,classes>(memberCol, let, lookuppipeline, m=>m.enrollee_info);
+
+var aggregate = clCol
+    .Aggregate()
+    .AppendStage(pipeline);
+var organizationsList = aggregate.ToList();
+```
+
+上诉方法对应的shell
+```sh
+db.classes.aggregate([
+   {
+      $lookup:
+         {
+            from: "members",
+            localField: "enrollmentlist",
+            foreignField: "name",
+            let: { enrollment: "$enrollmentlist" },
+            pipeline: [
+                { $match:
+                  { $expr:
+                      { $and:
+                        [
+                          { $eq: [ "$name", "$$enrollment" ] },
+                          { $eq: [ "$status", "D" ] }
+                        ]
+                      }
+                  }
+                }
+            ],
+            as: "enrollee_info"
+        }
+   }
+])
+```
+输出
+```sh
+{
+   "_id" : 1,
+   "title" : "Reading is ...",
+   "enrollmentlist" : [ "giraffe2", "pandabear", "artie" ],
+   "days" : [ "M", "W", "F" ],
+   "enrollee_info" : [
+      { "_id" : 6, "name" : "giraffe2", "joined" : ISODate("2018-12-01T00:00:00Z"), "status" : "D" }
+   ]
+}
+{
+   "_id" : 2,
+   "title" : "But Writing ...",
+   "enrollmentlist" : [ "giraffe1", "artie" ],
+   "days" : [ "T", "F" ],
+   "enrollee_info" : []
+}
+```
+
 >其他操作
 
 $mergeObjects 操作，可以merge关联的两个document   
