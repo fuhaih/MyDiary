@@ -79,14 +79,21 @@
 [root@izm5e944c3bh8eikqxjle5z ~]# docker rm $(docker ps -a -q)
 ```
 ## 列出所有镜像
-```vim shell
+```sh
+# 列出镜像
 [root@izm5e944c3bh8eikqxjle5z ~]# docker image list
+[root@izm5e944c3bh8eikqxjle5z ~]# docker images
+# 列出镜像ID
+[root@izm5e944c3bh8eikqxjle5z ~]# docker images -q
 ```
 ## 删除镜像
-```vim shell
+```sh
 [root@izm5e944c3bh8eikqxjle5z ~]# docker rmi <image id/name>
 # 删除<none>镜像
 [root@izm5e944c3bh8eikqxjle5z ~]# docker rmi $(docker images -f "dangling=true" -q)
+
+# 删除所有镜像
+[root@izm5e944c3bh8eikqxjle5z ~]# docker rmi $(docker images -q)
 ```
 同一个镜像可以有多个tag，所以有可能看到有两个镜像拥有相同的镜像id，所以docker rmi `<name>`有可能只是删除一个tag而已，镜像不会真正删除镜像。
 
