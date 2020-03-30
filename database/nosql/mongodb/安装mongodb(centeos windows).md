@@ -100,15 +100,20 @@ mongod -f D:\MongoDB\mongod.cfg
 ## 4、把mongodb以windows服务的形式来启动
 这个需要使用管理员权限，使用管理员权限来打开命令行工具    
 ```
-mongod -f D:\MongoDB\mongod.cfg --install --serviceName "MongoDB"
+mongod -f D:\MongoDB\mongod.cfg --install --serviceName "MongoDB" --serviceDisplayName "MongoDB"
 ```
 
 然后通过`net start MongoDB`命令来启动服务，也可以直接到服务管理面板来手动启动服务
 
 卸载服务和重装服务
-```
+```sh
+# mongod命令
 mongod -f D:\MongoDB\mongod.cfg --remove --serviceName "MongoDB"
 mongod -f D:\MongoDB\mongod.cfg --reinstall --serviceName "MongoDB"
+
+# windows sc 命令
+# sc delete <serviceDisplayName>
+sc delete MongoDB
 ```
 ## 进入控制台
 
