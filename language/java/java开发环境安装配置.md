@@ -65,6 +65,43 @@ Path : `%M2_HOME%\bin`
 <localRepository>D:\apache\maven-repository</localRepository>
 ```
 
+## tomcat 安装
+
+>下载tomcat
+
+这里下载的是`apache-tomcat-9.0.33-windows-x64.zip`
+
+>解压
+
+解压到`D:\apache\apache-tomcat-9.0.33`目录下
+
+>配置
+
+配置文件是在conf/server.xml
+
+>环境变量配置
+
+个人倾向于不配置环境变量，方便多个版本使用，类似mongodb一样
+
+>测试
+
+bin目录下点击`startup.bat`文件，就能运行tomcat
+
+浏览器输入`localhost:8080`
+
+>安装成服务
+
+bin目录下使用管理员身份运行命令
+
+```sh
+# 安装服务
+service.bat install
+# 启动服务
+net start Tomcat9
+```
+
+
+
 ## vs code
 
 [Java in Visual Studio Code](https://code.visualstudio.com/docs/languages/java)
