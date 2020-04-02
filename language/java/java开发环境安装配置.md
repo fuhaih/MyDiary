@@ -100,7 +100,11 @@ service.bat install
 net start Tomcat9
 ```
 
+>tomcat控制台输出乱码问题
 
+修改`\conf\logging.properties`文件，注释掉`java.util.logging.ConsoleHandler.encoding = UTF-8`
+
+该问题目前出现在Tomcat9中
 
 ## vs code
 
