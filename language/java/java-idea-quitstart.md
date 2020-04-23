@@ -136,6 +136,7 @@ idea可以配置文件夹属性，通过右键文件夹->Make Directory as可以
   </dependency>
 </dependencies>
 ```
+添加完成后，右下角弹框点击`import changes`,就会到本地仓库导入包，如果没有就会远程下载到本地仓库再导入
 
 如上，由于各个spring组件的版本都是一致的，要升级的时候也是要同时修改，所以可以直接在`properties`标签中定义spring版本`springframework.version`,然后通过`${springframework.version}`方式来使用。
 
@@ -251,3 +252,97 @@ Run->Edit Configurations->Templates中选择Tomcat local模板，Create configur
 `Deployment`中添加Artifact
 
 然后就可以run调试，选中配置的Tomcat。
+
+## 视图
+
+> 使用视图
+添加依赖感
+
+```xml
+<!--视图包-->
+<dependency>
+  <groupId>javax.servlet</groupId>
+  <artifactId>jstl</artifactId>
+  <version>1.2</version>
+</dependency>
+```
+dispatcher-servlet.xml中配置viewResolver
+
+
+```xml
+<beans>
+    <!--视图解析器-->
+  <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+      <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+      <!--视图前缀，也就是要报视图放在/WEB-INF/views/路径下-->
+      <property name="prefix" value="/WEB-INF/views/"/>
+      <property name="suffix" value=".jsp"/>
+  </bean>
+</beans>
+```
+
+>视图传输模型
+
+* ModelAndView
+
+* Model／Map／ModelMap
+
+* @SessionAttributes
+
+* @ModelAttribute
+>el表达式不支持
+
+查看`web.xml`文件，Servlet2.3/jsp1.2默认是不支持el表达式的
+
+**解决方案1:**
+jsp文件头中添加`isELIgnored="false"`
+```jsp
+<%@ page contentType="text/html;charset=UTF-8" language="java" isELIgnored="false" %>
+```
+
+**解决方案2**
+
+`web.xml` 配置文件中配置Servlet为2.5版本
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://java.sun.com/xml/ns/javaee"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         id="WebApp_ID" version="2.5">
+
+</web-app>
+```
+
+## idea调试问题
+
+> 调试
+
+点击`Run->Debug 'Tomcat'` 或者按 `F9`快捷键
+
+`Run->Run 'Tomcat'` 是直接运行项目，不会进入断点调试
+
+>断点只能进入一次
+
+这个是因为点击`Run To Cursor`来跳到下一个断点导致的，跳断点应该使用快捷键`F9`
+
+## rest web api
+
+## idea 使用 git
+
+## beans配置
+
+## Hibernate
+
+## 单元测试
+
+## 打包部署
+
+## docker部署
+
+## yml使用
+
+## spring cloud
+
+## swagger
+
+## 权限控制问题
