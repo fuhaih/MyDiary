@@ -253,6 +253,8 @@ Run->Edit Configurations->Templates中选择Tomcat local模板，Create configur
 
 然后就可以run调试，选中配置的Tomcat。
 
+
+
 ## 视图
 
 > 使用视图
@@ -280,6 +282,22 @@ dispatcher-servlet.xml中配置viewResolver
   </bean>
 </beans>
 ```
+
+在配置的路径`/WEB-INF/views/`下添加一个jsp文件`home.jsp`,在控制器中编写home方法
+
+```java
+@Controller
+@RequestMapping(value = "/" ,produces = "application/json;charset=utf-8")
+public class HomeController {
+    @RequestMapping(value = "home")
+    public String Home(){
+        return "home";
+    }
+}
+```
+
+在默认情况下，控制器方法返回的值会交给视图解析器处理，这里返回的字符串就是视图名称。当加上`@ResponseBody`注解时是数据会经过转换器转换输入到输入流。
+
 
 >视图传输模型
 
@@ -313,6 +331,94 @@ jsp文件头中添加`isELIgnored="false"`
 </web-app>
 ```
 
+
+## SpringMvc
+
+> mvc:annotation-driven
+
+```xml
+<mvc:annotation-driven ignoreDefaultModelOnRedirect="true" conversion-service="" validator="" message-codes-resolver="">  
+        <mvc:argument-resolvers>  
+            <bean class="com.lay.user.util.CustomerArgumentResolver"/>  
+        </mvc:argument-resolvers>  
+        <mvc:message-converters>  
+            <bean class=""/>  
+        </mvc:message-converters>  
+        <mvc:return-value-handlers>  
+            <bean class=""/>  
+        </mvc:return-value-handlers>  
+</mvc:annotation-driven>  
+```
+
+* <mvc:argument-resolvers>
+
+参数解析器，可通过实现HandlerMethodArgumentResolver接口实现，该实现不会覆盖原有spring mvc内置解析对参数的解析，要自定义的内置支持参数解析可以考虑注册RequestMappingHandlerAdapter
+
+* <mvc:return-value-handlers>
+ 
+对返回值的处理。自定义实现类需要实现HandlerMethodReturnValueHandler，这个和上面提到的mvc:argument-resolvers自定义实现类的使用上几乎没差别。同样的，如果想改变内置返回值处理的话请直接注入RequestMappingHandlerAdapter
+
+* <mvc:message-converters>  
+
+主要是对 @RequestBody 参数和 @ResponseBody返回值的处理，可选的，在这里注册的HttpMessageConverter默认情况下优先级是高于内置的转换器的，那么怎么自定义转换器呢？通过实现HttpMessageConverter<T>接口便可以了，当然，你也可以继承AbstractHttpMessageConverter<T>，这样做会更轻松，具体做法参考源码
+
+
+**mvc:annotation-driven默认情况下注册了一下的转换器**
+
+```
+StringHttpMessageConverter
+FormHttpMessageConverter
+ByteArrayHttpMessageConverter
+MarshallingHttpMessageConverter
+MappingJacksonHttpMessageConverter
+SourceHttpMessageConverter
+BufferedImageHttpMessageConverter
+```
+
+所以很多时候要使用转换器，只要安装包就行了，比如说要使用json转换器，只需要安装相应的json包就行了。
+
+>ResponBody
+
+上面说了mvc:annotation-driven的作用，下面就实际使用一下，通过`ResponBody`注解来返回json格式数据
+
+添加响应的json包
+```xml
+<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+<dependency>
+  <groupId>com.fasterxml.jackson.core</groupId>
+  <artifactId>jackson-databind</artifactId>
+  <version>${jackson.version}</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
+<dependency>
+  <groupId>com.fasterxml.jackson.core</groupId>
+  <artifactId>jackson-core</artifactId>
+  <version>${jackson.version}</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations -->
+<dependency>
+  <groupId>com.fasterxml.jackson.core</groupId>
+  <artifactId>jackson-annotations</artifactId>
+  <version>${jackson.version}</version>
+</dependency>
+```
+由于`mvc:annotation-driven`已经默认注册了`MappingJacksonHttpMessageConverter`,所以不用多做配置，直接使用就行了
+
+```java
+@Controller
+@RequestMapping(value = "/",produces = "application/json;charset=utf-8")
+public class HomeController {
+    @RequestMapping(value = "user")
+    @ResponseBody
+    public User getUser(User user)
+    {
+        User user = new User("test","testpwd");
+        return  user;
+    }
+}
+```
+
+
 ## idea调试问题
 
 > 调试
@@ -327,7 +433,17 @@ jsp文件头中添加`isELIgnored="false"`
 
 ## rest web api
 
+@RestController
+
 ## idea 使用 git
+
+>JetBrains.gitignore
+
+[JetBrains.gitignore](https://github.com/github/gitignore/blob/master/Global/JetBrains.gitignore)
+
+## 配置
+
+## 拦截器
 
 ## beans配置
 
@@ -346,3 +462,7 @@ jsp文件头中添加`isELIgnored="false"`
 ## swagger
 
 ## 权限控制问题
+
+## 多项目管理
+
+pom.xml `<modules></modules>`
