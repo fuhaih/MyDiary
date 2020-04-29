@@ -332,7 +332,7 @@ jsp文件头中添加`isELIgnored="false"`
 ```
 
 
-## SpringMvc
+## Spring和SpringMVC
 
 > mvc:annotation-driven
 
@@ -418,8 +418,12 @@ public class HomeController {
 }
 ```
 
+**注意：**
 
-## idea调试问题
+要在`produces`中定义数据类型，这里定义为`application/json;charset=utf-8`
+
+
+## idea问题
 
 > 调试
 
@@ -430,6 +434,11 @@ public class HomeController {
 >断点只能进入一次
 
 这个是因为点击`Run To Cursor`来跳到下一个断点导致的，跳断点应该使用快捷键`F9`
+
+
+>绿色波浪线警告
+
+有时候有些个人项目的包名不是正常单词，IDE会检查出拼写问题，在引用包时也不会智能提示，这时候可以`save to project-level dictionary`,把该单词添加到字典中
 
 ## rest web api
 
@@ -442,6 +451,24 @@ public class HomeController {
 [JetBrains.gitignore](https://github.com/github/gitignore/blob/master/Global/JetBrains.gitignore)
 
 ## 配置
+
+>properties配置文件
+
+在`resource`文件夹中创建`database.properties`配置文件
+
+```properties
+driver =com.mysql.cj.jdbc.Driver
+url = mysql:jdbc://localhost:3306//test?userUnicode=true&characterEncoding=utf-8&serverTimezone=UFC;
+user =root
+password = root 
+```
+
+然后在`dispatcher-servlet.xml`中进行如下配置
+```xml
+<context:property-placeholder  location="classpath:database.properties"/>
+```
+
+最后通过注解方式获取配置信息
 
 ## 拦截器
 
