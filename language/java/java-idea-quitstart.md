@@ -1,10 +1,10 @@
-## 配置maven
+# 配置maven
 
 这个可以看idea.md
 
-## 使用maven创建一个项目
+# 使用maven创建一个项目
 
->创建webapp项目
+## 创建webapp项目
 
 File->New->Project->Maven
 
@@ -24,7 +24,7 @@ ArtifactId :`webapp` (项目名)
 
 项目创建好之后，会下载包到仓库中，idea右下角会有`Maven projects need to be imported`,点击`Enable Auto-Import`，这样在修改pom.xml文件时会自动下载依赖。
 
->修改目录结构
+## 修改目录结构
 
 新生成的webapp项目的目录结构是这样的
 
@@ -72,7 +72,7 @@ idea可以配置文件夹属性，通过右键文件夹->Make Directory as可以
 * Unmark as   (unmark不标记)
 * Generated Sources Root
 
->添加spring依赖
+## 添加spring依赖
 
 [maven仓库](https://mvnrepository.com/)
 
@@ -142,7 +142,7 @@ idea可以配置文件夹属性，通过右键文件夹->Make Directory as可以
 
 在添加完依赖后，idea会自动下载依赖到本地仓库，当配置文件没有红色警告时说明下载完成了。
 
->添加框架支持
+## 添加框架支持
 
 右键项目目录->Add Frameworks Support
 
@@ -161,7 +161,7 @@ File->Project Structure->Moudules
 
 找到Srping然后移除。
 
->配置mvc
+## 配置mvc
 
 
 web.xml
@@ -221,7 +221,7 @@ dispatcher-servlet.xml
     </bean>
 </beans>
 ```
->启动调试
+## 启动调试
 
 在java文件夹下创建一个`controller` package，在上面配置中有配置到
 
@@ -255,9 +255,9 @@ Run->Edit Configurations->Templates中选择Tomcat local模板，Create configur
 
 
 
-## 视图
+# 视图
 
-> 使用视图
+## 使用视图
 添加依赖感
 
 ```xml
@@ -299,7 +299,7 @@ public class HomeController {
 在默认情况下，控制器方法返回的值会交给视图解析器处理，这里返回的字符串就是视图名称。当加上`@ResponseBody`注解时是数据会经过转换器转换输入到输入流。
 
 
->视图传输模型
+## 视图传输模型
 
 * ModelAndView
 
@@ -332,9 +332,9 @@ jsp文件头中添加`isELIgnored="false"`
 ```
 
 
-## Spring和SpringMVC
+# Spring和SpringMVC
 
-> mvc:annotation-driven
+## mvc:annotation-driven
 
 ```xml
 <mvc:annotation-driven ignoreDefaultModelOnRedirect="true" conversion-service="" validator="" message-codes-resolver="">  
@@ -377,7 +377,7 @@ BufferedImageHttpMessageConverter
 
 所以很多时候要使用转换器，只要安装包就行了，比如说要使用json转换器，只需要安装相应的json包就行了。
 
->ResponBody
+## ResponBody
 
 上面说了mvc:annotation-driven的作用，下面就实际使用一下，通过`ResponBody`注解来返回json格式数据
 
@@ -422,31 +422,269 @@ public class HomeController {
 
 要在`produces`中定义数据类型，这里定义为`application/json;charset=utf-8`
 
+## bean注入方式
 
-## idea问题
 
-> 调试
+> xml配置
+
+可以通过xml配置来注入bean
+
+视图处理器就是通过xml来配置的
+
+```xml
+<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+    <property name="prefix" value="/WEB-INF/views/"/>
+    <property name="suffix" value=".jsp"/>
+</bean>
+```
+
+
+> 注解
+
+通过`@Controller`,`@Component`,`@Service`,`@Repository`这几个注解都能注入bean，不过需要配置`context:component-scan`,容器就会从配置路径中查找这几个注解，把bean注入到容器中。
+
+```xml
+<context:component-scan base-package="cn.fuhai.controller"/>
+```
+spring mvc的控制器就是以这种方式注入的。
+
+## spring容器和spring mvc容器
+
+一个应用程序中可以有多个ICO容器，默认情况下会有spring和spring mvc这两个容器，spring 容器称为根容器，spring mvc容器是spring容器的子容器，负责mvc相关的bean的管理。
+
+`applicationContext.xml`为spring容器的配置文件，`dispatcher-servlet.xml`为spring mvc的配置文件，这两个都要在`web.xml`中进行配置。
+
+这两个容器都可以通过xml配置和注解方式来进行bean的注册。
+在使用注解进行注册时，如果两个配置同时扫描的一个包，那么那个包下的bean会注册到spring容器中，所以不应该把控制器所在的包配置到 `applicationContext.xml` 的`context:component-scan`中，这样会把控制器注册到spring 容器中，导致spring mvc获取不到路由（具体原因尚未清楚）。
+
+
+父子容器的几个特点
+
+* 子容器可以访问父容器的bean
+
+* 父容器不能访问子容器的bean
+
+* 子容器不能通过@Value("${}")来获取父容器的properties配置
+
+* 
+
+## properties配置例子
+创建配置文件`jdbc.properties`放在资源包下
+
+```
+jdbc.driver =com.mysql.cj.jdbc.Driver
+jdbc.url = mysql:jdbc://localhost:3306//test?userUnicode=true&characterEncoding=utf-8&serverTimezone=UFC;
+jdbc.user =root
+jdbc.password = root
+```
+
+
+首先要先知道要把配置注册到哪个容器中，这样方便使用`${}`来获取配置
+
+这里只是把`viewResolver`和`Controller`配置在spring mvc容器中，其他的bean包括properties配置都放在spring容器中。
+
+spring mvc 容器配置文件`dispatcher-servlet.xml`
+```xml
+<!--这里只扫描controller包，其他包交个spring扫描-->
+<context:component-scan base-package="cn.fuhai.controller"/>
+```
+
+spring容器配置文件`applicationContext.xml`
+```xml
+<context:component-scan base-package="cn.fuhai.*">
+    <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+</context:component-scan>
+```
+spring中扫描`cn.fuhai`包下所有的注解，但是过滤掉`@Controller`注解。
+
+然后在`applicationContext.xml`中配置properties文件
+```xml
+<bean id="propertyConfigurer"
+      class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="locations">
+        <array>
+            <value>classpath:jdbc.properties</value>
+        </array>
+    </property>
+</bean>
+```
+**classpath：** (这个暂时不知道)
+
+然后配置相应的模型类
+
+```java
+package cn.fuhai.beans.config;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+public class DatabaseConfig {
+    private String Driver;
+    private String Url;
+    private String User;
+    private String Password;
+
+    public String getDriver() {
+        return Driver;
+    }
+
+    public String getUrl() {
+        return Url;
+    }
+
+    public String getUser() {
+        return User;
+    }
+
+    public String getPassword() {
+        return Password;
+    }
+
+    public void setDriver(String driver) {
+        Driver = driver;
+    }
+
+    public void setUrl(String url) {
+        Url = url;
+    }
+
+    public void setUser(String user) {
+        User = user;
+    }
+
+    public void setPassword(String password) {
+        Password = password;
+    }
+}
+```
+
+最后在`applicationContext.xml`配置文件中通过xml方式注册bean
+
+```xml
+<bean id="dataSource"
+      class="cn.fuhai.beans.config.DatabaseConfig">
+    <property name="Driver">
+        <value>${jdbc.driver}</value>
+    </property>
+    <property name="Url" >
+        <value>${jdbc.url}</value>
+    </property>
+    <property name="User" >
+        <value>${jdbc.user}</value>
+    </property>
+    <property name="Password">
+        <value>${jdbc.password}</value>
+    </property>
+</bean>
+```
+
+也可以通过注解方式来注册再通过@Value注解获取配置。
+
+```java
+package cn.fuhai.beans.config;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+@Component("dataConfig")
+public class DatabaseConfig {
+    @Value("${jdbc.driver}")
+    public String Driver;
+    @Value("${jdbc.url}")
+    public String Url;
+    @Value("${jdbc.user}")
+    public String User;
+    @Value("${jdbc.password}")
+    public String Password;
+
+    public String getDriver() {
+        return Driver;
+    }
+
+    public String getUrl() {
+        return Url;
+    }
+
+    public String getUser() {
+        return User;
+    }
+
+    public String getPassword() {
+        return Password;
+    }
+
+    public void setDriver(String driver) {
+        Driver = driver;
+    }
+
+    public void setUrl(String url) {
+        Url = url;
+    }
+
+    public void setUser(String user) {
+        User = user;
+    }
+
+    public void setPassword(String password) {
+        Password = password;
+    }
+}
+```
+
+该bean是在`cn.fuhai`包下，会被spring容器扫描到，并注册到容器中。
+
+
+通过Autowired注入
+
+```java
+public class HomeController {
+    private DatabaseConfig databaseConfig;
+    @Autowired
+    public void setDatabaseConfig(DatabaseConfig databaseConfig) {
+        this.databaseConfig = databaseConfig;
+    }
+    private DatabaseValueConfig databaseValueConfig;
+}
+```
+
+
+## 注入方式
+
+注入可以通过xml进行配置，也可以使用`@Autowire`、`@Resource`等注解进行自动装配。
+
+>构造函数注入
+
+>set函数注入
+
+>字段注入
+
+# idea问题
+
+## 调试
 
 点击`Run->Debug 'Tomcat'` 或者按 `F9`快捷键
 
 `Run->Run 'Tomcat'` 是直接运行项目，不会进入断点调试
 
->断点只能进入一次
+## 断点只能进入一次
 
 这个是因为点击`Run To Cursor`来跳到下一个断点导致的，跳断点应该使用快捷键`F9`
 
 
->绿色波浪线警告
+## 绿色波浪线警告
 
 有时候有些个人项目的包名不是正常单词，IDE会检查出拼写问题，在引用包时也不会智能提示，这时候可以`save to project-level dictionary`,把该单词添加到字典中
 
-## rest web api
+# rest web api
 
 @RestController
 
-## idea 使用 git
+# idea 使用 git
 
->JetBrains.gitignore
+## JetBrains.gitignore
 
 [JetBrains.gitignore](https://github.com/github/gitignore/blob/master/Global/JetBrains.gitignore)
 
@@ -470,26 +708,26 @@ password = root
 
 最后通过注解方式获取配置信息
 
-## 拦截器
+# 拦截器
 
-## beans配置
+# Hibernate
 
-## Hibernate
+# 单元测试
 
-## 单元测试
+# 打包部署
 
-## 打包部署
+# docker部署
 
-## docker部署
+# yml使用
 
-## yml使用
+# spring cloud
 
-## spring cloud
+# swagger
 
-## swagger
+# 权限控制问题
 
-## 权限控制问题
-
-## 多项目管理
+# 多项目管理
 
 pom.xml `<modules></modules>`
+
+# spring boot
