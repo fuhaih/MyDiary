@@ -661,6 +661,199 @@ public class HomeController {
 
 >字段注入
 
+# 数据库
+
+## jdbc
+
+>包引用
+
+首先要找到对应数据库的jdbc实现，这里用的mysql，所以引用下列包
+
+```xml
+<!--mysql-connector-->
+<dependency>
+  <groupId>mysql</groupId>
+  <artifactId>mysql-connector-java</artifactId>
+  <version>${mysql-connector.version}</version>
+</dependency>
+<dependency>
+  <groupId>org.apache.commons</groupId>
+  <artifactId>commons-pool2</artifactId>
+  <version>2.8.0</version>
+</dependency>
+<dependency>
+  <groupId>org.apache.commons</groupId>
+  <artifactId>commons-dbcp2</artifactId>
+  <version>2.7.0</version>
+</dependency>
+```
+`mysql-connector-java`是jdbc的mysql实现，`commons-pool2`和`commons-dbcp2`这两个是连接池相关包，jdbc默认是不实现连接池的，所以这里使用连接池相关包，用连接池来创建数据库连接，可以优化连接的创建。
+
+>配置
+
+```conf
+jdbc.driver=com.mysql.jdbc.Driver
+jdbc.url=jdbc:mysql://47.106.162.159:3306/selffate
+jdbc.user=root
+jdbc.password=Root@123
+```
+
+>访问数据库
+
+```java
+@RequestMapping(value = "jdbc")
+@ResponseBody
+public User TestJdbc() throws SQLException {
+    BasicDataSource dataSource = new BasicDataSource();
+    dataSource.setDriverClassName(databaseConfig.getDriver());
+    dataSource.setUrl(databaseConfig.getUrl());
+    dataSource.setUsername(databaseConfig.getUser());
+    dataSource.setPassword(databaseConfig.getPassword());
+    Connection connection=dataSource.getConnection();
+    String sql="select * from user";
+    PreparedStatement pstm = connection.prepareStatement(sql);
+    ResultSet set = pstm.executeQuery();
+    set.next();
+    Integer uid = set.getInt("uid");
+    String uname = set.getString("uname");
+    String upassword = set.getString("upassword");
+    User user= new User();
+    user.setUid(uid);
+    user.setUname(uname);
+    user.setUpassword(upassword);
+    return user;
+}
+```
+
+## orm框架
+>包引用
+
+胶水包 spring-orm
+
+orm包 
+
+jdbc包
+
+xml解析包
+
+```xml
+<!--spring orm 相关包-->
+<!--它增加了支持(胶水代码)以将各种ORM解决方案与Spring集成在一起,包括Hibernate 3/4,iBatis,JDO和JPA.当然,它本身并不是ORM,它只是一座桥梁.您仍然需要包括相关的库.-->
+<dependency>
+  <groupId>org.springframework</groupId>
+  <artifactId>spring-orm</artifactId>
+  <version>${springframework.version}</version>
+</dependency>
+<dependency>
+  <groupId>org.springframework</groupId>
+  <artifactId>spring-tx</artifactId>
+  <version>${springframework.version}</version>
+</dependency>
+<dependency>
+  <groupId>javax.annotation</groupId>
+  <artifactId>javax.annotation-api</artifactId>
+  <version>1.3.2</version>
+</dependency>
+<!--mysql-connector-->
+<dependency>
+  <groupId>mysql</groupId>
+  <artifactId>mysql-connector-java</artifactId>
+  <version>${mysql-connector.version}</version>
+</dependency>
+<dependency>
+  <groupId>org.apache.commons</groupId>
+  <artifactId>commons-pool2</artifactId>
+  <version>2.8.0</version>
+</dependency>
+<dependency>
+  <groupId>org.apache.commons</groupId>
+  <artifactId>commons-dbcp2</artifactId>
+  <version>2.7.0</version>
+</dependency>
+<!--xml解析-->
+<dependency>
+  <groupId>org.dom4j</groupId>
+  <artifactId>dom4j</artifactId>
+  <version>2.1.1</version>
+</dependency>
+<dependency>
+  <groupId>xalan</groupId>
+  <artifactId>xalan</artifactId>
+  <version>2.7.1</version>
+</dependency>
+<dependency>
+  <groupId>xerces</groupId>
+  <artifactId>xercesImpl</artifactId>
+  <version>2.9.1</version>
+</dependency>
+<!--hibernate-->
+<dependency>
+  <groupId>org.hibernate</groupId>
+  <artifactId>hibernate-core</artifactId>
+  <version>${hibernate.version}</version>
+</dependency>
+<dependency>
+  <groupId>org.javassist</groupId>
+  <artifactId>javassist</artifactId>
+  <version>3.24.0-GA</version>
+</dependency>
+```
+
+>配置
+
+applicationContext.xml
+```xml
+<!--连接池配置-->
+<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+    <property name="driverClassName" value="${jdbc.driver}"/>
+    <property name="url" value="${jdbc.url}"/>
+    <property name="username" value="${jdbc.user}"/>
+    <property name="password" value="${jdbc.password}"/>
+</bean>
+<!--sessionFactory配置-->
+<bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+    <property name="dataSource" ref="dataSource"></property>
+    <property name="packagesToScan">
+        <list>
+            <value>cn.fuhai.entity</value>
+        </list>
+    </property>
+    <property name="hibernateProperties">
+        <value>
+            hibernate.hbm2ddl.auto=${jdbc.hibernate.hbm2ddl.auto}
+            hibernate.dialect=${jdbc.hibernate.dialect}
+            hibernate.show_sql=${jdbc.hibernate.show_sql}
+        </value>
+    </property>
+</bean>
+<bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+    <property name="sessionFactory" ref="sessionFactory"/>
+</bean>
+<tx:annotation-driven transaction-manager="transactionManager"/>
+
+```
+
+>sql查询
+
+>Criteria查询
+
+##一些异常
+
+>javax.net.ssl.SSLException: closing inbound before receiving peer's close_notify
+
+数据库url后面加上`useSSL=false`
+
+```conf
+jdbc.url=jdbc:mysql://localhost:3306/selffate?serverTimezone=GMT%2B8&useSSL=false
+```
+
+>Cannot resolve table 'user'
+
+这个是配置Entity使用@Table注解时出现的异常。尚且不知原因。
+
+可能是用原生sql来查询时不用配置@Table注解，用动态查询时才需要配置
+
+
 # idea问题
 
 ## 调试

@@ -82,6 +82,10 @@ ALTER USER USER() IDENTIFIED BY '新密码';
 
     skip-grant-tables
 
+重启mysql服务
+
+    systemctl restart
+
 在8.0以后不能通过update语句来更新密码了
 ```bash
 # 无密码
