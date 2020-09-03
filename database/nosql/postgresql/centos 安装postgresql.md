@@ -33,7 +33,7 @@ systemctl start postgresql-12
 >进入数据库
 
 ```sh
-# 切换到postgres用户
+# 切换到postgres用户 这个要在root下切换
 [root@iZwz9bgky7baa1u8pb4fniZ fuhai]# su - postgres
 # psql命令进入postgresql数据库
 -bash-4.2$ psql
@@ -48,7 +48,11 @@ postgres=# \q;
 >创建用户
 
 ```sh
-postgres=# create user test with password '123456'
+# 新建用户并给予登录权限
+postgres=# create role test password '123456' login;
+# 新建超级用户并给予登录权限
+postgres=# create role test superuser password '123456' login;
+
 ```
 
 >开启远程访问
@@ -61,6 +65,23 @@ vim /var/lib/pgsql/12/data/postgresql.conf
 ```vim
 listen_addresses = "*"
 ```
+
+```
+vim /var/lib/pgsql/12/data/pg_hba.conf
+```
+
+修改
+```vim
+host    all     all     0.0.0.0/0    md5
+```
+
+ident:本地登录
+
+md5:用户名密码登录
+
+trust:仅验证用户
+
+refuse:
 
 重启服务
 
