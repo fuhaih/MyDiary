@@ -1,0 +1,5 @@
+1、 commit 异常
+把user.name 和user.email配置在本地，这样就需要每个项目都做配置
+
+git config --local user.name "name"
+....................

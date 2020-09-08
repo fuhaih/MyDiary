@@ -37,3 +37,87 @@ cd到路径`/usr/local/gitlab/data/gitlab-rails/etc`,找到`gitlab.yml`配置文
 然后浏览器输入地址 http://host_ip:port
 
 >gitlab汉化
+
+>
+
+配置
+
+```
+gitlab_rails['gitlab_ssh_host'] = '192.168.199.231'
+gitlab_rails['gitlab_shell_ssh_port'] = 222 # 此端口是run时22端口映射的222端口
+```
+
+# git 多账户使用
+
+>清除全局配置
+
+```
+git config --global --unset user.name "你的名字"
+git config --global --unset user.email "你的邮箱"
+```
+
+使用本地配置来进行配置
+
+```
+git config --local user.name "你的名字"
+git config --local user.email "你的邮箱"
+```
+
+
+>生成秘钥
+
+```
+ssh-keygen -t rsa -f ~/.ssh/id_rsa.github -C "lx@qq.com"
+ssh-keygen -t rsa -f ~/.ssh/id_rsa.gitlab -C "lx@qq.com"
+```
+
+把秘钥添加到ssh agent中
+
+```
+$ ssh-agent bash
+$ ssh-add ~/.ssh/id_rsa.github
+$ ssh-add ~/.ssh/id_rsa.gitlab
+```
+
+
+拷贝秘钥
+```
+clip < ~/.ssh/id_rsa.github.pub
+```
+然后登陆账户添加到github上，gitlab同理
+
+>创建config文件（重点）
+
+```
+touch ~/.ssh/config    
+```
+
+写入如下配置
+
+```yml
+#Default gitHub user Self
+Host github.com
+    HostName github.com
+    PreferredAuthentications publickey
+    User fuhaih
+    IdentityFile ~/.ssh/id_rsa.github
+
+#Add gitLab user 
+Host git@192.168.68.100
+    Port 222
+    HostName 192.168.68.100
+    User root
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/id_rsa.gitlab
+```
+
+>测试秘钥
+
+```sh
+ssh -T git@github.com
+# 这里要输入密码，我猜想应该是使用了22端口来访问，22端口是linux的ssh连接端口，但是直接加上端口号又不行，目前不知道怎么回事，但是在使用的时候没什么影响
+# ssh -T git@192.168.68.100
+#改为这样
+ssh -T ssh://git@192.168.68.100:222
+```
+
