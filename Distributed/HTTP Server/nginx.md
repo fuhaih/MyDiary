@@ -514,3 +514,17 @@ server {
 
 配置allow时需要添加`deny all;`，否则allow起作用，但是也并不会禁止其他ip访问。
 
+>关于文件上传
+
+使用nginx做代理的时候，可能会出现文件上传大小限制，可以做如下配置来处理
+
+```nginx
+client_max_body_size 500m;
+client_body_buffer_size 256k;
+client_body_temp_path /etc/nginx/proxy_temp;
+```
+
+可以配置在`http`、`server`、`location`这几个节点，区别就是作用的范围。
+
+
+

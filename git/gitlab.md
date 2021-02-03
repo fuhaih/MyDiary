@@ -12,7 +12,7 @@ docker pull gitlab/gitlab-ce
 ```sh
 # 创建gitlab数据存储路径
 mkdir /usr/local/gitlab
-docker run -d -p 443:443 -p 80:80 -p 222:22 --hostname 0.0.0.0 -v /usr/local/gitlab/config:/etc/gitlab -v /usr/local/gitlab/logs:/var/log/gitlab -v /usr/local/gitlab/data:/var/opt/gitlab gitlab/gitlab-ce
+docker run -d -p 443:443 -p 80:80 -p 222:22 --restart=always --hostname 0.0.0.0 -v /usr/local/gitlab/config:/etc/gitlab -v /usr/local/gitlab/logs:/var/log/gitlab -v /usr/local/gitlab/data:/var/opt/gitlab gitlab/gitlab-ce
 ```
 端口映射时候，由于22端口是宿主机远程ssh访问端口，所以改成222.
 
@@ -103,7 +103,7 @@ Host github.com
     IdentityFile ~/.ssh/id_rsa.github
 
 #Add gitLab user 
-Host git@192.168.68.100
+Host 192.168.68.100
     Port 222
     HostName 192.168.68.100
     User root
@@ -115,9 +115,6 @@ Host git@192.168.68.100
 
 ```sh
 ssh -T git@github.com
-# 这里要输入密码，我猜想应该是使用了22端口来访问，22端口是linux的ssh连接端口，但是直接加上端口号又不行，目前不知道怎么回事，但是在使用的时候没什么影响
-# ssh -T git@192.168.68.100
-#改为这样
-ssh -T ssh://git@192.168.68.100:222
+ssh -T git@192.168.68.100
 ```
 

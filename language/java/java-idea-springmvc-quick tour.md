@@ -509,7 +509,7 @@ spring中扫描`cn.fuhai`包下所有的注解，但是过滤掉`@Controller`注
     </property>
 </bean>
 ```
-**classpath：** (这个暂时不知道)
+**classpath：** 是只编译后的classes目录，查看target文件夹会看到有一个classes目录，项目中的java、resources、WEB-INF都会编译到该目录下，所以classpath能直接使用这三个目录的东西
 
 然后配置相应的模型类
 
@@ -1640,7 +1640,7 @@ jdbc.url=jdbc:mysql://localhost:3306/selffate?serverTimezone=GMT%2B8&useSSL=fals
 
 >Cannot resolve table 'user'
 
-这个是配置Entity使用@Table注解时出现的异常。尚且不知原因。不影响使用
+这个是配置Entity使用@Table注解时出现的异常。使用@Entity来替代，mybaits-plush中使用@TableName
 
 
 

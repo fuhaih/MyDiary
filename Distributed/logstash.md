@@ -154,3 +154,19 @@ filter {
 
 >领域专用语言（domain specific language / DSL） 
 
+
+
+# 插件安装
+
+>安装logstash-output-mongodb
+
+logstash bin目录下执行以下命令
+```sh
+logstash-plugin install logstash-output-mongodb
+
+# 指定版本安装
+logstash-plugin install --version=3.1.5 logstash-output-mongodb
+```
+这个需要java环境下执行。
+
+mongodb-3.6.4 需要安装logstash-output-mongodb-3.1.5，安装logstash-output-mongodb-3.1.6出现异常
