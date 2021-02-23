@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>居中</title>
+    <style>
+      html,body{
+        padding: 0px;
+        margin: 0px;
+        height: 100%;
+        width: 100%;
+      }
+      fieldset{
+        margin-top: 20px;
+      }
+      .content{
+        width: 100%;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        justify-content:center;
+      }
+      .fset1{
+        padding: 0px;
+      }
+
+      .fset2{
+        border: 1px solid #888888;
+      }
+      .fset2 legend{
+        padding: 0px 10px;
+      }
+
+      .fset3 {
+        width: 300px;
+        height: 24px;
+        border: 1px solid transparent;
+        border-top-color: #000;
+      }
+      
+      .fset3 legend{
+        margin: auto;
+        padding: 0 10px;
+      }
+    </style>
+</head>
+<body>
+  <div class="content">
+    <form>
+      <fieldset>
+        <legend>默认格式</legend>
+        <input type="text" id="user_name" name="user_name" placeholder="用户名"/>
+        <input type="text" id="pwd" name="pwd" placeholder="密码"/>
+      </fieldset>
+      <fieldset class="fset1">
+        <legend>把fieldset的padding设置为 0px</legend>
+        <input type="text" id="user_name" name="user_name" placeholder="用户名"/>
+        <input type="text" id="pwd" name="pwd" placeholder="密码"/>
+      </fieldset>
+      <fieldset class="fset2">
+        <legend>设置legend的padding用来添加留白</legend>
+        <input type="text" id="user_name" name="user_name" placeholder="用户名"/>
+        <input type="text" id="pwd" name="pwd" placeholder="密码"/>
+      </fieldset>
+
+      <fieldset class="fset3">
+        <legend>fieldset实现分割线</legend>
+      </fieldset>
+    </form>
+  </div>
+</body>
+</html>
