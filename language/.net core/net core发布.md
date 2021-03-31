@@ -182,7 +182,13 @@ Host.CreateDefaultBuilder(args)
 >通过命令安装(以管理员身份运行)
 
 ```sh
-sc create SHEnergyServer2 binpath=D:\punlish\SHEnergyServer2\SHEnergyServer2.exe
+
+# binpath= 后面需要有空格，有些系统版本是需要空格的
+sc create SHEnergyServer2 binpath= D:\punlish\SHEnergyServer2\SHEnergyServer2.exe
+
+sc create TTBEMS_SynchronizeData binpath= D:\SynchronizeData\SynchronizeData.exe
+
+
 ```
 
 # docker发布
