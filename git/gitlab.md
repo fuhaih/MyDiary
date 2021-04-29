@@ -71,7 +71,7 @@ ssh-keygen -t rsa -f ~/.ssh/id_rsa.github -C "lx@qq.com"
 ssh-keygen -t rsa -f ~/.ssh/id_rsa.gitlab -C "lx@qq.com"
 ```
 
-把秘钥添加到ssh agent中
+把秘钥添加到ssh agent中,这个是必须的，否则可能出现异常
 
 ```
 $ ssh-agent bash
