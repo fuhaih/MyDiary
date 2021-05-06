@@ -172,4 +172,18 @@ git push origin master
 ```
 
 
+###关联分支
+
+```s
+git branch --set-upstream-to=origin/dev
+```
+
+关联分支后，git push 等命令就不用每次都附带origin和branch，
+
+```s
+git push xxx master
+# 添加分支关联后,直接git push就会推送到关联的origin中的指定分支中
+git push
+```
+
 

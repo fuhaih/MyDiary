@@ -95,6 +95,8 @@ touch ~/.ssh/config
 写入如下配置
 
 ```yml
+#Host 必须为ip或者域名，否则会异常，如果配置的linux的ssh连接，可以使用别名来命名host
+
 #Default gitHub user Self
 Host github.com
     HostName github.com
