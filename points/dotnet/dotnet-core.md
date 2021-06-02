@@ -57,6 +57,12 @@ app.UseEndpoints(endpoints =>
 {
     // 这个是特性控制器路由，[Route][HttpGet]等特性配置路由，一般就是指webapi的路由
     endpoints.MapControllers();
+    //直接写路由，类似还有MapPost等
+    endpoints.MapGet("/", async context =>
+    {
+        await Task.Yield();
+        context.Response.Redirect("/swagger");
+    });
     // 这个是传统控制器路由
     endpoints.MapControllerRoute(
         name: "default",
@@ -65,3 +71,7 @@ app.UseEndpoints(endpoints =>
 ```
 
 >MapGet
+
+```
+
+```
