@@ -401,7 +401,7 @@ ObjectResult的好处就是可以很方便的返回各种不同格式的数据�
 
 也可以使用`FormatFilter`来协商内容，`FormatFilter`是一种筛选器，它将使用路由数据或查询字符串中的格式值来设置从操作返回的的内容类型 ObjectResult
 
-[FormatFilter](#3.2.4&nbsp;FormatFilterAttribute)
+[FormatFilter](#324-FormatFilterAttribute)
 
 这样就不用设置Accept头了，通过url来指定获取的数据格式
 
@@ -712,7 +712,7 @@ public class TestController : Controller
 
 ### 3.2.3 ResultFilterAttribute
 
-### 3.2.4&nbsp;FormatFilterAttribute 
+### 3.2.4 FormatFilterAttribute 
 
 
 FormatFilter不属于上面的五中类型的Filter，但是肯定也是在Filter管道中执行的
@@ -812,7 +812,7 @@ public IActionResult Hi(string name)
 ## 
 # 4 Parameter
 
-[http传参](../http.md#1.2%C2%A0传参)
+[http传参](../http.md#12-传参)
 
 
 # 5 HttpContext

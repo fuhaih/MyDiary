@@ -15,7 +15,7 @@ POST /test.html?userid=1&name=test HTTP/1.1
 
 ### 1.2.2 body传参
 
-[body传参](#2.1%C2%A0ContentType)
+[body传参](#21-ContentType)
 
 # 2、 header
 
