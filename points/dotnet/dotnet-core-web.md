@@ -816,6 +816,160 @@ public IActionResult Hi(string name)
 
 
 # 5 HttpContext
+
+在.net framework中，mvc和webapi是返回的`IHttpActionResult`对象
+```csharp
+//
+// 摘要:
+//     定义一个用于以异步方式创建 System.Net.Http.HttpResponseMessage 的命令。
+public interface IHttpActionResult
+{
+    //
+    // 摘要:
+    //     以异步方式创建 System.Net.Http.HttpResponseMessage。
+    //
+    // 参数:
+    //   cancellationToken:
+    //     要监视的取消请求标记。
+    //
+    // 返回结果:
+    //     在完成时包含 System.Net.Http.HttpResponseMessage 的任务。
+    Task<HttpResponseMessage> ExecuteAsync(CancellationToken cancellationToken);
+}
+```
+
+该接口的`ExecuteAsync`方法是返回一个`HttpResponseMessage`对象
+
+```csharp
+//
+// 摘要:
+//     表示包括状态代码和数据的 HTTP 响应消息。
+public class HttpResponseMessage : IDisposable
+{
+    //
+    // 摘要:
+    //     初始化 System.Net.Http.HttpResponseMessage 类的新实例。
+    public HttpResponseMessage();
+    //
+    // 摘要:
+    //     初始化指定的 System.Net.Http.HttpResponseMessage.StatusCode 的 System.Net.Http.HttpResponseMessage
+    //     类的新实例。
+    //
+    // 参数:
+    //   statusCode:
+    //     HTTP 响应的状态代码。
+    public HttpResponseMessage(HttpStatusCode statusCode);
+
+    //
+    // 摘要:
+    //     获取或设置 HTTP 响应消息的内容。
+    //
+    // 返回结果:
+    //     返回 System.Net.Http.HttpContent。HTTP 响应消息的内容。
+    public HttpContent Content { get; set; }
+    //
+    // 摘要:
+    //     获取 HTTP 响应标头的集合。
+    //
+    // 返回结果:
+    //     返回 System.Net.Http.Headers.HttpResponseHeaders。HTTP 响应标头的集合。
+    public HttpResponseHeaders Headers { get; }
+    //
+    // 摘要:
+    //     获取一个值，该值指示 HTTP 响应是否成功。
+    //
+    // 返回结果:
+    //     返回 System.Boolean。指示 HTTP 响应是否成功的值。如果 System.Net.Http.HttpResponseMessage.StatusCode
+    //     在 200-299 范围中，则为 true；否则为 false。
+    public bool IsSuccessStatusCode { get; }
+    //
+    // 摘要:
+    //     获取或设置服务器与状态代码通常一起发送的原因短语。
+    //
+    // 返回结果:
+    //     返回 System.String。服务器发送的原因词组。
+    public string ReasonPhrase { get; set; }
+    //
+    // 摘要:
+    //     获取或设置导致此响应消息的请求消息。
+    //
+    // 返回结果:
+    //     返回 System.Net.Http.HttpRequestMessage。导致此响应信息的请求消息。
+    public HttpRequestMessage RequestMessage { get; set; }
+    //
+    // 摘要:
+    //     获取或设置 HTTP 响应的状态代码。
+    //
+    // 返回结果:
+    //     返回 System.Net.HttpStatusCode。HTTP 响应的状态代码。
+    public HttpStatusCode StatusCode { get; set; }
+    //
+    // 摘要:
+    //     获取或设置 HTTP 消息版本。
+    //
+    // 返回结果:
+    //     返回 System.Version。HTTP 消息版本。默认值为 1.1。
+    public Version Version { get; set; }
+
+    //
+    // 摘要:
+    //     释放由 System.Net.Http.HttpResponseMessage 使用的非托管资源。
+    public void Dispose();
+    //
+    // 摘要:
+    //     如果 HTTP 响应的 System.Net.Http.HttpResponseMessage.IsSuccessStatusCode 属性为 false，
+    //     将引发异常。
+    //
+    // 返回结果:
+    //     返回 System.Net.Http.HttpResponseMessage。如果调用成功则 HTTP 响应消息。
+    public HttpResponseMessage EnsureSuccessStatusCode();
+    //
+    // 摘要:
+    //     返回表示当前对象的字符串。
+    //
+    // 返回结果:
+    //     返回 System.String。当前对象的字符串表示形式。
+    public override string ToString();
+    //
+    // 摘要:
+    //     释放由 System.Net.Http.HttpResponseMessage 使用的非托管资源，并可根据需要释放托管资源。
+    //
+    // 参数:
+    //   disposing:
+    //     如果为 true，则释放托管资源和非托管资源；如果为 false，则仅释放非托管资源。
+    protected virtual void Dispose(bool disposing);
+}
+```
+
+所以在mvc和webapi方法中，也能直接返回一个`HttpResponseMessage`对象，然后通过设置该对象的HttpContent来返回数据
+
+例子：
+
+视频断点下载
+
+```csharp
+var stream = await bucket.OpenDownloadStreamAsync(id, options);
+if (Request.Headers.Range != null)
+{
+    HttpResponseMessage partialResponse = Request.CreateResponse(HttpStatusCode.PartialContent);
+    partialResponse.Content = new ByteRangeStreamContent(stream, Request.Headers.Range, type, 3 * 1024 * 1024);
+    return partialResponse;
+}
+else
+{
+    HttpResponseMessage fullResponse = new HttpResponseMessage(HttpStatusCode.OK);
+    fullResponse.Content = new StreamContent(stream, 3 * 1024 * 1024);
+    fullResponse.Content.Headers.ContentType = new MediaTypeHeaderValue(type);
+    fullResponse.Headers.AcceptRanges.Add("bytes");
+    return fullResponse;
+}
+```
+而在dotnet core中已经修改了数据返回的方式，通过IActionResult对象想Response中写入返回数据，所以暂时用不到HttpContent，但是如果使用dotnet core来进行http请求，也是需要使用到HttpContent的
+
+[HttpContent使用](./http-client.md#12-HttpContent)
+
+HttpContent的使用在dotnet framework和dotnet core都是类似的。
+
 # webapi
 
 
