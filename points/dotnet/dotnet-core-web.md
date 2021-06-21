@@ -812,7 +812,7 @@ public IActionResult Hi(string name)
 ## 
 # 4 Parameter
 
-[http传参](../http.md#1.2&nbsp;传参)
+[http传参](../http.md#1.2%C2%A0传参)
 
 
 # 5 HttpContext

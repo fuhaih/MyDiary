@@ -2,7 +2,7 @@
 
 ## 1.1 组成
 
-## 1.2&nbsp;传参
+## 1.2 传参
 
 ### 1.2.1 url传参
 
@@ -15,11 +15,11 @@ POST /test.html?userid=1&name=test HTTP/1.1
 
 ### 1.2.2 body传参
 
-[body传参](#2.1&nbsp;ContentType)
+[body传参](#2.1%C2%A0ContentType)
 
 # 2、 header
 
-## 2.1&nbsp;ContentType
+## 2.1 ContentType
 
 常用的几个ContentType类型
 
