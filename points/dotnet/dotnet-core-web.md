@@ -1,13 +1,13 @@
-# mvc
+# 1 mvc
 
-## 概念
+## 1.1 概念
 
 >mvc概念
 
 模型(model)、视图(view)、控制器(controller)
-## 控制器
+## 1.2 控制器
 
->ControllerBase
+### 1.2.1 ControllerBase
 
 `ControllerBase`是控制器基类，mvc控制器和api控制器都是继承自`ControllerBase`
 ```csharp
@@ -76,7 +76,7 @@ public abstract class ControllerBase
 
 ```
 
->api 控制器
+### 1.2.2 api 控制器
 
 ```csharp
 [Route("api/[controller]")]
@@ -86,7 +86,7 @@ public class ValuesController : ControllerBase
 }
 ```
 
->mvc 控制器
+### 1.2.3 mvc 控制器
 
 mvc控制器是继承自`Controller`，而`Controller`是继承自`ControllerBase`,`Controller`相对于`ControllerBase`多了一些视图相关的字段和方法。
 
@@ -145,12 +145,13 @@ public abstract class Controller : ControllerBase, IActionFilter, IFilterMetadat
 
 
 
-## 视图
+## 1.3 视图
 
-## 模型
+## 1.4 模型
 
-# Result
-## IActionResult(api&mvc)
+# 2 Result
+
+## 2.1 IActionResult(api&mvc)
 
 >AcceptedResult
 
@@ -224,8 +225,7 @@ public abstract class Controller : ControllerBase, IActionFilter, IFilterMetadat
 
 > **ActionResult**
 
-## IActionResult(mvc)
-
+## 2.2 IActionResult(mvc)
 
 >JsonResult
 
@@ -235,12 +235,11 @@ public abstract class Controller : ControllerBase, IActionFilter, IFilterMetadat
 
 >ViewComponentResult
 
-## 自定义IActionResult
+## 2.3 自定义IActionResult
 
 继承IActionResult并实现ExecuteResultAsync方法
 
-
->IActionResult
+### 2.3.1 IActionResult
 
 ```csharp
 //
@@ -269,7 +268,7 @@ IActionResult定义了一个`ExecuteResultAsync`方法，控制器在获取到IA
 
 
 
->Response
+### 2.3.2 Response
 
 IActionResult方便了响应数据的写入，如果是返回的json数据，直接返回一个JosnResult就行了，也可以自己写Respon，如下Response方式的接口编写。
 
@@ -288,7 +287,7 @@ public async Task GetRespon() {
 }
 ```
 
->自定义IActionResult
+### 2.3.3 自定义IActionResult
 
 定义MyJsonResult
 ```csharp
@@ -325,11 +324,11 @@ public async Task<IActionResult> GetMyAction() {
 }
 ```
 
-## IActionResult总结
+## 2.4IActionResult总结
 
 mvc控制器包含的方法中多了几个视图类型的Result方法(ViewResult...)以及JsonResult返回值的方法`Json`
 
->ObjectResult and JsonResult
+### 2.4.1 ObjectResult and JsonResult
 
 这两个都可以进行数据格式化
 
@@ -402,7 +401,331 @@ ObjectResult的好处就是可以很方便的返回各种不同格式的数据�
 
 也可以使用`FormatFilter`来协商内容，`FormatFilter`是一种筛选器，它将使用路由数据或查询字符串中的格式值来设置从操作返回的的内容类型 ObjectResult
 
-添加一个xml格式化器，并添加mapper映射，FormatFilter会通过map找mediatype
+[FormatFilter](#3.2.4&nbsp;FormatFilterAttribute)
+
+这样就不用设置Accept头了，通过url来指定获取的数据格式
+
+### 2.4.2 ContentResult
+
+格式化输出除了上面的ObjectResult和JsonResult之外，还能用ContentResult
+
+```csharp
+[Route("content")]
+[HttpGet]
+public async Task<IActionResult> GetContent() {
+    UserRespon user = new UserRespon();
+    string result = JsonConvert.SerializeObject(user);
+    ContentResult content = new ContentResult()
+    {
+        Content = result,
+        ContentType = "application/json",
+        StatusCode = 200
+    };
+    return Content(result, "application/json");
+    //return Content(result, "application/json");
+    //return Content(result,new MediaTypeHeaderValue("application/json"));
+}
+```
+
+把需要返回的对象先格式化，然后赋值给Content，指定格式化的类型ContentType,指定状态码
+
+控制器内置的方法`Content`默认状态码是200
+
+### 2.4.3 StatusCodeResult
+
+AcceptedResult(202)、BadRequestResult(400)、ForbidResult(403)、ConflictResult(409)、OkResult(200)、RedirectResult(301/302)、NoContentResult(204)、UnauthorizedResult(401)、NotFoundResult(404)、UnprocessableEntityResult(422)
+
+301 redirect: 301 代表永久性转移(Permanently Moved)、
+
+302 redirect: 302 代表暂时性转移(Temporarily Moved )
+
+重定向时会把重定向的地址写入到响应头`location`中
+
+其他http状态可以使用`StatusCodeResult`
+
+```csharp
+//500 服务器错误
+return StatusCode(500)
+```
+
+### 2.4.4ChallengeResult
+
+`An ActionResult that on execution invokes HttpContext.ChallengeAsync.`
+
+`HttpContext.ChallengeAsync`是和第三方认证服务相关的方法，所以ChallengeResult应该也是和第三方认证服务有关
+
+
+### 2.4.5 FileResult
+
+`VirtualFileResult`、`FileStreamResult`、`PhysicalFileResult`、`FileContentResult`
+
+这四个类型都是继承自`FileResult`，只是传递的参数有所区别，分别需要 虚拟路径、stream流、物理路径、byte[]数组
+
+```csharp
+//
+// 摘要:
+//     Represents an Microsoft.AspNetCore.Mvc.ActionResult that when executed will write
+//     a file as the response.
+public abstract class FileResult : ActionResult
+{
+    //
+    // 摘要:
+    //     Creates a new Microsoft.AspNetCore.Mvc.FileResult instance with the provided
+    //     contentType.
+    //
+    // 参数:
+    //   contentType:
+    //     The Content-Type header of the response.
+    protected FileResult(string contentType);
+
+    //
+    // 摘要:
+    //     Gets the Content-Type header for the response.
+    public string ContentType { get; }
+    //
+    // 摘要:
+    //     Gets or sets the value that enables range processing for the Microsoft.AspNetCore.Mvc.FileResult.
+    public bool EnableRangeProcessing { get; set; }
+    //
+    // 摘要:
+    //     Gets or sets the etag associated with the Microsoft.AspNetCore.Mvc.FileResult.
+    public EntityTagHeaderValue EntityTag { get; set; }
+    //
+    // 摘要:
+    //     Gets the file name that will be used in the Content-Disposition header of the
+    //     response.
+    public string FileDownloadName { get; set; }
+    //
+    // 摘要:
+    //     Gets or sets the last modified information associated with the Microsoft.AspNetCore.Mvc.FileResult.
+    public DateTimeOffset? LastModified { get; set; }
+}
+```
+* ContentType
+
+文件下载时候的`ContentType`一般为`application/octet-stream`或者对应的mime类型
+
+* EnableRangeProcessing
+
+是否支持Range处理，这个是和断点续传有关的，涉及到的请求头和响应头有`Accept-Ranges`、`Range`、`Content-Range`，设置为true将能支持文件的断点下载。
+
+[.net framwork中文件断点下载实现]()
+
+[range请求头]()
+
+* FileDownloadName
+
+文件下载名称，会写在`Content-Disposition`响应头中
+
+* EntityTag、LastModified
+
+`EntityTag`和`LastModified`这连个字段涉及到http请求资源变更问题，其中涉及到的http 请求头和响应头有以下四个
+
+`Last-Modified`、`ETag`、`If-Modified-Since`、`If-None-Match`
+
+[资源变更]()
+
+
+
+### 2.4.5 
+
+
+# 3 Filter
+
+## 3.1工作原理和默认顺序
+
+### 3.1.1filter管道
+
+在请求进来后，会执行各种中间件，最后会选择控制器的action进行操作，Filter就是在选择好action后的filter管道中运行的。
+
+![这是图片](filter-pipeline-1.png)
+
+下面是filter管道
+
+![这是图片](filter-pipeline-2.png)
+
+### 3.1.2 IAuthorizationFilter
+
+### 3.1.3 IResourceFilter
+
+```csharp
+public class MyResourceFilter : IResourceFilter
+{
+    public void OnResourceExecuted(ResourceExecutedContext context)
+    {
+        UserRespon user = new UserRespon();
+        user.Name = "MyResourceFilter_OnResourceExecuted";
+        context.Result = new JsonResult(user);
+    }
+
+    public void OnResourceExecuting(ResourceExecutingContext context)
+    {
+        UserRespon user = new UserRespon();
+        user.Name = "MyResourceFilter_OnResourceExecuting";
+        context.Result = new JsonResult(user);
+        //throw new NotImplementedException();
+    }
+}
+```
+
+IResourceFilter 有两个方法，`OnResourceExecuting`和`OnResourceExecuted`
+
+`OnResourceExecuting`中如果设置了Result，将会中断后续的Filter以及控制器的Action，直接返回该Result，相当于Filter管道直接结束了。
+
+如果没有设置Result，那么就会继续正常执行Filter管道，但是`OnResourceExecuted`中设置的Result将不起作用，`OnResourceExecuted`在执行之前，Result就已经写入到Response中了。
+
+
+### 3.1.4 IActionFilter
+
+```csharp
+// 执行顺序
+// OnActionExecuting、action、OnActionExecuted
+// result的设置权重
+// OnActionExecuting、OnActionExecuted、action
+
+public class MyActionFilter : IActionFilter
+{
+    // 在controller.action执行之后执行
+    public void OnActionExecuted(ActionExecutedContext context)
+    {
+        UserRespon user = new UserRespon();
+        user.Name = "OnActionExecuted";
+        context.Result = new JsonResult(user);
+    }
+    // 在controller.action执行之前执行
+    public void OnActionExecuting(ActionExecutingContext context)
+    {
+        UserRespon user = new UserRespon();
+        user.Name = "OnActionExecuting";
+        context.Result = new JsonResult(user);
+    }
+}
+```
+
+* OnActionExecuting中设置了result后，action和OnActionExecuted的设置将无效
+
+* OnActionExecuting没有设置时，OnActionExecuted中设置的result会覆盖action的设置
+
+
+
+### 3.1.5 IExceptionFilter
+
+用来处理异常
+
+### 3.1.6 IResultFilter
+
+`ResultExecutingContext`中的`Result`是只读的，也就是不能够在`IResultFilter`中修改Result
+
+`IResultFilter`的作用一般是用来修改请求的Respon头信息。可以用来配置跨域等功能。
+
+```csharp
+public class AddHeaderResultServiceFilter : IResultFilter
+{
+    private ILogger _logger;
+    public AddHeaderResultServiceFilter(ILoggerFactory loggerFactory)
+    {
+        _logger = loggerFactory.CreateLogger<AddHeaderResultServiceFilter>();
+    }
+
+    public void OnResultExecuting(ResultExecutingContext context)
+    {
+        var headerName = "OnResultExecuting";
+        context.HttpContext.Response.Headers.Add(
+            headerName, new string[] { "ResultExecutingSuccessfully" });
+        _logger.LogInformation("Header added: {HeaderName}", headerName);
+    }
+
+    public void OnResultExecuted(ResultExecutedContext context)
+    {
+        // Can't add to headers here because response has started.
+        _logger.LogInformation("AddHeaderResultServiceFilter.OnResultExecuted");
+    }
+}
+
+```
+
+### 3.1.7 多个同一类filter执行顺序
+
+当filter有两个方法时，一般一个是先调用的Executing方法(before)和后调用的Executed方法(after)
+
+filter的方法调用顺序如下
+
+* The before code of global filters.
+* The before code of controller and Razor Page filters.
+* The before code of action method filters.
+* The after code of action method filters.
+* The after code of controller and Razor Page filters.
+* The after code of global filters.
+
+
+**例子：**
+
+```csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddControllersWithViews(options =>
+   {
+        options.Filters.Add(typeof(MySampleActionFilter));
+    });
+}
+```
+
+```csharp
+public class TestController : Controller
+{
+    [SampleActionFilter(Order = int.MinValue)]
+    public IActionResult FilterTest2()
+    {
+        return ControllerContext.MyDisplayRouteInfo();
+    }
+
+    public override void OnActionExecuting(ActionExecutingContext context)
+    {
+        // Do something before the action executes.
+        MyDebug.Write(MethodBase.GetCurrentMethod(), HttpContext.Request.Path);
+        base.OnActionExecuting(context);
+    }
+
+    public override void OnActionExecuted(ActionExecutedContext context)
+    {
+        // Do something after the action executes.
+        MyDebug.Write(MethodBase.GetCurrentMethod(), HttpContext.Request.Path);
+        base.OnActionExecuted(context);
+    }
+}
+```
+给`TestController`配置两个ActionFilter，一个是全局配置的`MySampleActionFilter`,另一个是在Action中配置的`SampleActionFilter`，通过`OnActionExecuting`和`OnActionExecuted`回调查看两个Filter中方法的执行顺序如下
+
+
+* TestController.OnActionExecuting
+  * MySampleActionFilter.OnActionExecuting
+    * SampleActionFilterAttribute.OnActionExecuting
+      * TestController.FilterTest2
+    * SampleActionFilterAttribute.OnActionExecuted
+  * MySampleActionFilter.OnActionExecuted
+* TestController.OnActionExecuted
+## 3.2 内置相关类
+
+### 3.2.1 ActionFilterAttribute
+
+### 3.2.2 ExceptionFilterAttribute
+
+### 3.2.3 ResultFilterAttribute
+
+### 3.2.4&nbsp;FormatFilterAttribute 
+
+
+FormatFilter不属于上面的五中类型的Filter，但是肯定也是在Filter管道中执行的
+
+1、FormatFilter是在IActionFilter之后执行的。
+
+2、FormatFilter需要添加格式化器，同时添加format和格式化器的映射，FormatFilter会找到url中的format，然后通过map映射找到对应的格式化器，对返回数据进行格式化。
+
+3、FormatFilter只对ObjectResult类型或者其子类生效。因为和设置Accept头类似，都是通过格式协商来进行格式化的，只有ObjectResult类型支持格式协商。
+
+**例子：**
+
+添加一个xml格式化器，并添加mapper映射，FormatFilter会通过map找mediatype，再通过mediatype找到Formatter
 
 ```csharp
 services.AddControllersWithViews(options=> {
@@ -441,7 +764,7 @@ GET http://localhost:20583/api/values/value.json HTTP/1.1
 }
 ```
 
-获取xml数据,设置请求头`Accept`为`application/xml`
+获取xml数据
 ```s
 GET http://localhost:20583/api/values/value.xml HTTP/1.1
 ```
@@ -452,62 +775,7 @@ GET http://localhost:20583/api/values/value.xml HTTP/1.1
 </UserRespon>
 ```
 
-这样就不用设置Accept头了，通过url来指定获取的数据格式
-
->ContentResult
-
-格式化输出除了上面的ObjectResult和JsonResult之外，还能用ContentResult
-
-```csharp
-[Route("content")]
-[HttpGet]
-public async Task<IActionResult> GetContent() {
-    UserRespon user = new UserRespon();
-    string result = JsonConvert.SerializeObject(user);
-    ContentResult content = new ContentResult()
-    {
-        Content = result,
-        ContentType = "application/json",
-        StatusCode = 200
-    };
-    return Content(result, "application/json");
-    //return Content(result, "application/json");
-    //return Content(result,new MediaTypeHeaderValue("application/json"));
-}
-```
-
-把需要返回的对象先格式化，然后赋值给Content，指定格式化的类型ContentType,指定状态码
-
-控制器内置的方法`Content`默认状态码是200
-
->
-
->状态码相关的Result
-
->ChallengeResult
-
-`An ActionResult that on execution invokes HttpContext.ChallengeAsync.`
-
-`HttpContext.ChallengeAsync`是和第三方认证服务相关的方法，所以ChallengeResult应该也是和第三方认证服务有关
-
-
-
-
-# Filter
-
-## 工作原理和默认顺序
-
-## 内置相关类
-
->ActionFilterAttribute
-
->ExceptionFilterAttribute
-
->ResultFilterAttribute
-
->FormatFilterAttribute
-
->ServiceFilterAttribute
+### 3.2.5 ServiceFilterAttribute
 
 用来添加Filter的，有些Filter需要使用到依赖注入，不能直接通过中括号进行使用，需要用到ServiceFilter
 
@@ -526,7 +794,7 @@ public class IndexModel : PageModel
 }
 ```
 
->TypeFilterAttribute
+### 3.2.6 TypeFilterAttribute
 
 和ServiceFilter类似，但不是使用容器来构造对象
 
@@ -539,19 +807,19 @@ public IActionResult Hi(string name)
 }
 ```
 
-## Filter
-
->
 
 
-# Parameter
+## 
+# 4 Parameter
 
+[http传参](../http.md#1.2&nbsp;传参)
+
+
+# 5 HttpContext
 # webapi
 
 
-* 参数：
 
-各种参数类型json、urlencode、formdata、parameter等对应的特性
 
 * 返回值：
 
@@ -560,6 +828,8 @@ public IActionResult Hi(string name)
 * 异常处理
 
 TypeFilter
+
+
 
 
 ## mvc

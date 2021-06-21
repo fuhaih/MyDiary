@@ -1,3 +1,96 @@
+# 1、http组成
+
+## 1.1 组成
+
+## 1.2&nbsp;传参
+
+### 1.2.1 url传参
+
+通过url的QueryString传参
+```h
+POST /test.html?userid=1&name=test HTTP/1.1
+```
+
+在url中通过`&`符号来连接参数，传输到后端。
+
+### 1.2.2 body传参
+
+[body传参](#2.1&nbsp;ContentType)
+
+# 2、 header
+
+## 2.1&nbsp;ContentType
+
+常用的几个ContentType类型
+
+### 2.1.1 json
+
+`application/json`
+```json
+POST /test.html HTTP/1.1
+Host: example.org
+Content-Type: application/json
+
+{"userid":1,"usename":"root"}
+```
+
+### 2.1.2 urlencoded
+
+`application/x-www-form-urlencoded`
+```
+POST /test.html HTTP/1.1
+Host: example.org
+Content-Type: application/x-www-form-urlencoded
+
+user=root&pwd=root
+```
+
+form表单默认的Content-Type就是`application/x-www-form-urlencoded`,该类型的数据格式和url传参相似，都是通过`&`符号来连接参数，`application/x-www-form-urlencoded`则是把参数放在body中，url就是直接放在url末尾，一些比较重要的数据推荐还是放在body中，在https访问时能够被加密，而放在url中会直接暴露在外，不安全。
+
+
+### 2.1.3 formdata
+
+`multipart/form-data`
+
+格式：
+
+```h
+POST /test.html HTTP/1.1
+Host: example.org
+Content-Type: multipart/form-data;boundary="boundary"
+
+--boundary
+Content-Disposition: form-data; name="field1"
+
+value1
+--boundary
+Content-Disposition: form-data; name="field2"; filename="image.png"
+Content-Type: image/png  
+
+...contents of image.png...  
+--boundary--
+```
+`multipart/form-data`格式会以`boundary`来分隔每个参数，http请求格式中，header和body会有以后间隔，所以这里是从--boundary开始是body内容，每个参数的格式就是
+```c
+//--boundary
+//参数描述Content-Disposition、Content-Type
+//空格
+//参数数据
+```
+body最后还以`--boundary--`结束，这里注意，`--boundary--`后面需要换行，避免影响到下一个http请求。
+
+
+
+
+### 2.1.4 其他格式
+
+其他格式也是可以，但是需要告诉浏览器或者ajax如何序列化数据
+
+## 2.2 Accept
+
+
+
+
 1、在浏览器地址栏输入一个 URL 后回车，背后发生了什么
 
 * dns域名服务器解析域名，获取ip，根据ip找到服务器，建立tcp连接

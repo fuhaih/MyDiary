@@ -1,0 +1,11 @@
+>oplog
+
+oplog会记录主节点的操作信息，主从复制就是通过oplog来实现的，当误操作时，可以通过oplog来进行回滚
+
+oplog只有在集群模式中才会有，所以单节点mongodb可以创建一个单节点的集群服务。
+
+>mongodump、mongorestore
+
+这两个命令分别是mongodb备份和恢复命令，可以创建一个bat文件，通过windows定时任务执行bat来定时备份mongodb
+
+通过这种方式并结合oplog，可以很好的解决误操作

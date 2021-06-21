@@ -11,9 +11,10 @@ Content-Disposition: form-data; name="field1"
 
 value1
 --boundary
-Content-Disposition: form-data; name="field2"; filename="example.txt"
+Content-Disposition: form-data; name="field2"; filename="image.png"
+Content-Type: image/png  
 
-value2
+...contents of image.png...  
 --boundary--
 ```
 
