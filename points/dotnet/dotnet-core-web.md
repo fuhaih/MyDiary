@@ -810,9 +810,80 @@ public IActionResult Hi(string name)
 
 
 ## 
-# 4 Parameter
+# 4 Parameter绑定
 
-[http传参](../http.md#12-传参)
+[http传参](../http.md#12-传参)有两种方式，一种是通过url传参，一种是通过body来传参，通过body传参又有三种常用的格式(ContentType) `application/json`、`application/x-www-form-urlencoded`、`multipart/form-data` ,对应的几种不同的传参方式和格式，dotnet core后端需要做不同的处理
+
+## 4.1 QueryString
+
+`FromQuery`可以把`QueryString`中的传递过来的数据绑定到方法参数中
+
+```csharp
+[Route("querystring")]
+[HttpGet]
+public async Task<IActionResult> QueryString([FromQuery] string name,[FromQuery]string action)
+{
+    return Ok(new { name = name ,action = action});
+}
+```
+
+## 4.2 Json
+
+`FromBody`可以绑定`application/json`参数
+
+```csharp
+[Route("json")]
+[HttpPost]
+public async Task<IActionResult> QueryJson([FromBody] UserRespon user) {
+    return Ok(user);
+}
+```
+
+## 4.3 UrlEncoded、FormData
+
+`FromForm`可以绑定`application/x-www-form-urlencoded`、`multipart/form-data`数据
+
+```csharp
+public class UserRespon
+{
+    public int Id { get; set; } = 1;
+    public string Name { get; set; } = "test";
+}
+
+public class UserFile : UserRespon
+{ 
+    public IFormFile file { get; set; }
+}
+
+[Route("urlencode")]
+[HttpPost]
+public async Task<IActionResult> QueryUrlEncode([FromForm] UserRespon user)
+{
+    return Ok(user);
+}
+[Route("formdata")]
+[HttpPost]
+public async Task<IActionResult> QueryFormData([FromForm] UserFile user)
+{
+    return Ok();
+}
+
+```
+
+## 4.5 自定义参数绑定
+
+### ModelBinderProvider、BindingSourceValueProvider、IInputFormatters
+
+`BindingSourceValueProvider` 解析参数值
+
+
+`ModelBinderProvider` 把参数值绑定到参数中
+
+`FromForm`里面就是指定了模型绑定用的`IModelBinder`
+
+`InputFormatters`暂时不知道用法
+### IModelBinder
+
 
 
 # 5 HttpContext
@@ -966,9 +1037,7 @@ else
 ```
 而在dotnet core中已经修改了数据返回的方式，通过IActionResult对象想Response中写入返回数据，所以暂时用不到HttpContent，但是如果使用dotnet core来进行http请求，也是需要使用到HttpContent的
 
-[HttpContent使用](./http-client.md#12-HttpContent)
-
-HttpContent的使用在dotnet framework和dotnet core都是类似的。
+[HttpContent](./http-client.md#12-HttpContent)的使用在dotnet framework和dotnet core都是类似的。
 
 # webapi
 
