@@ -142,6 +142,74 @@ new ParameterExpression[] { variableExpr },
 Expression.Lambda<Func<string>>(blockExpr).Compile()
 ```
 
+# 例子
+
+## sql helper
+
+```csharp
+public static class SqlHelper
+{
+    public static List<T> ToList<T>(this IDataReader dataReader)
+    {
+        List<T> result = new List<T>();
+        Func<IDataReader, T> func = GetMapFunc<T>(dataReader);
+        while (dataReader.Read())
+        {
+            result.Add(func(dataReader));
+        }
+        return result;
+    }
+    private static Func<IDataReader, T> GetMapFunc<T>(IDataReader dataReader)
+    {
+        var exps = new List<Expression>();
+
+        var columnNames = Enumerable.Range(0, dataReader.FieldCount)
+                            .Select(i => new { i, name = dataReader.GetName(i) });
+        #if DEBUG
+        Type ttype = typeof(T);
+        Debug.WriteLine(string.Format("模型{0}各个字段数据的类型", ttype.Name));
+        DataTable table = dataReader.GetSchemaTable();
+        for (int i = 0; i < table.Rows.Count; i++)
+        {
+            string name = Convert.ToString(table.Rows[i]["ColumnName"]);
+            string type = Convert.ToString(table.Rows[i]["DataType"]);
+            Debug.WriteLine(string.Format("{0} -- {1}", name, type));
+        }
+        #endif
+        var paramRow = Expression.Parameter(typeof(IDataReader), "row");
+        var nullvalue = Expression.Constant(System.DBNull.Value);
+        List<MemberBinding> memberBindings = new List<MemberBinding>();
+
+        var indexerInfo = typeof(IDataRecord).GetProperty("Item", new[] { typeof(int) });
+        foreach (var column in columnNames)
+        {
+            var outPropertyInfo = typeof(T).GetProperty(
+                column.name,
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+            if (outPropertyInfo == null)
+                continue;
+            var columnNameExp = Expression.Constant(column.i);
+            var propertyExp = Expression.MakeIndex(
+                paramRow,
+                indexerInfo, new[] { columnNameExp });
+            var condition = Expression.Equal(propertyExp, nullvalue);
+            var convertExp = Expression.Convert(propertyExp, outPropertyInfo.PropertyType);
+            var setExp = Expression.Condition(condition, Expression.Default(outPropertyInfo.PropertyType), convertExp);
+            MemberBinding memberBinding = Expression.Bind(outPropertyInfo, setExp);
+            memberBindings.Add(memberBinding);
+        }
+
+        MemberInitExpression init = Expression.MemberInit(Expression.New(typeof(T)), memberBindings.ToArray());
+        Expression<Func<IDataReader, T>> lambda = Expression.Lambda<Func<IDataReader, T>>(init, paramRow);
+        Func<IDataReader, T> func = lambda.Compile();
+        return func;
+    }
+
+
+}
+
+```
+
 # 问题
 
 >PropertyExpression

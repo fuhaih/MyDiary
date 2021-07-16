@@ -1055,19 +1055,78 @@ TypeFilter
 
 
 
-## mvc
+# 6 场景
 
-* 认证
+## 6.1 授权认证
 
 [链接](../授权和认证.md)
 
 [dotnet core 授权认证](./dotnet-core-授权认证.md)
 
-* 内置对象
+## 6.2 在其他服务中获取授权认证用户信息
 
-HttpContext
+在进行授权认证后，可以通过`HttpContext.User`获取到用户信息(ClaimsPrincipal),这在Controller中是很方便就能获取到的，但是在其他服务中需要通过参数传递的方式获取，这样比较麻烦
 
-* 内置注入对象
+dotnet core提供了`IHttpContextAccessor`来帮助我们获取HttpContext对象，我们可以根据需求扩展自己的服务
+
+方案1：
+
+注册`IHttpContextAccessor`
+```csharp
+services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+```
+
+创建一个服务来获取HttpContext对象
+
+```csharp
+public class ContextService
+{
+    private IHttpContextAccessor httpContextAccessor;
+    public ContextService(IServiceProvider serviceProvider) {
+        httpContextAccessor = serviceProvider.GetService<IHttpContextAccessor>();
+    }
+    public HttpContext HttpContext{
+        get { return httpContextAccessor.HttpContext; }
+    }
+}
+// IHttpContextAccessor能够解析当前的上下文，所以不需要使用AddScoped来确保上下文正确，直接使用单例模式(AddSingleton)就能针对不同请求获取响应的上下文信息
+services.AddSingleton<ContextService>();
+```
+需要使用时注入到对应的服务就行了
+
+缺点：不太建议在其他服务中直接使用HttpContext对象，特别是在后台服务中，可能请求已经结束，HttpContext对象已经释放。
+
+改进：
+
+```csharp
+public class ContextService
+{
+    public ClaimsPrincipal User;
+    public ContextService(IServiceProvider serviceProvider) {
+        var httpContextAccessor = serviceProvider.GetService<IHttpContextAccessor>();
+        User = httpContextAccessor.HttpContext.User;
+    }
+}
+services.AddScoped<ContextService>();
+```
+
+改进后的ContextService是使用`IHttpContextAccessor`获取到所需要的数据即可，这时候需要使用`AddScoped`来注册服务，确保每个请求获取到的ContextService对象都不一样。
+
+
+方案2：
+
+```csharp
+services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+services.AddScoped(x =>
+{
+    var context = x.GetService<IHttpContextAccessor>();
+    return context.HttpContext.User;
+});
+```
+
+通过这种方式注册`ClaimsPrincipal`对象，在需要使用的服务中可以直接注入`ClaimsPrincipal`对象，包括各种Filter中也是可以注入。
+
+# 7 内置注入对象
 
 IMemoryCache
 
