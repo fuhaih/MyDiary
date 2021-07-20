@@ -1,3 +1,22 @@
+# 基础
+
+## 语法
+
+>where having
+
+>drop、truncate、delete
+
+>标识列
+
+>表变量和临时表
+
+>varchar、nvarchar、char
+
+有var前缀的,表示是实际存储空间是变长的
+
+有n前缀的,n表示Unicode字符
+
+# 案例
 >从表中删除数据的方式，及区别(TRUNCATE和DELETE 其他)
 
 
