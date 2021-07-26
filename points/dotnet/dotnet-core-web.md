@@ -1039,19 +1039,6 @@ else
 
 [HttpContent](./http-client.md#12-HttpContent)的使用在dotnet framework和dotnet core都是类似的。
 
-# webapi
-
-
-
-
-* 返回值：
-
-各种类型返回值
-
-* 异常处理
-
-TypeFilter
-
 
 
 
@@ -1131,3 +1118,14 @@ services.AddScoped(x =>
 IMemoryCache
 
 ISession
+
+# 8 Middleware 中间件
+
+# 9 AOP编程
+
+## Middleware
+
+## filter
+
+## 动态代理(AspectCore) 
+
