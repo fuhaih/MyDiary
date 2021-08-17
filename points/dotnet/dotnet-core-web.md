@@ -872,6 +872,8 @@ public async Task<IActionResult> QueryFormData([FromForm] UserFile user)
 
 ## 4.5 自定义参数绑定
 
+## 4.6 modelstate
+
 ### ModelBinderProvider、BindingSourceValueProvider、IInputFormatters
 
 `BindingSourceValueProvider` 解析参数值
@@ -882,6 +884,10 @@ public async Task<IActionResult> QueryFormData([FromForm] UserFile user)
 `FromForm`里面就是指定了模型绑定用的`IModelBinder`
 
 `InputFormatters`暂时不知道用法
+
+
+`BindingSource`
+
 ### IModelBinder
 
 

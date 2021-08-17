@@ -8,6 +8,47 @@ function timeJson2Date(time) {
   return new Date(mseconds);
 }
 
+// 根据format把time字符串转换为Date对象
+//把format转换为正则表达式
+//yyyy-MM-dd hh:mm:ss 转换为 
+//(\d{4})-\d{2}-\d{2} \d{2}:\d{2}:\d{2} RegExp.$1能获取到year
+//\d{4}-(\d{2})-\d{2} \d{2}:\d{2}:\d{2} RegExp.$1能获取到month
+//\d{4}-\d{2}-(\d{2}) \d{2}:\d{2}:\d{2} RegExp.$1能获取到day
+//\d{4}-\d{2}-\d{2} (\d{2}):\d{2}:\d{2} RegExp.$1能获取到hour
+//\d{4}-\d{2}-\d{2} \d{2}:(\d{2}):\d{2} RegExp.$1能获取到minute
+//\d{4}-\d{2}-\d{2} \d{2}:\d{2}:(\d{2}) RegExp.$1能获取到second
+//\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}
+const parse_format = function(time,format){
+  var o = {
+    year:"yyyy",
+    month:"MM",
+    day:"dd",
+    hour:"hh",
+    minute:"mm",
+    second:"ss",
+    msecond:"SSS"
+  };
+  var data ={};
+  for(var k in o){
+    var fmt = format;
+    for(var c in o){
+      if (new RegExp("(" + o[c] + ")").test(fmt)){
+        if(k==c){
+          fmt = fmt.replace(RegExp.$1,"(\\d{"+RegExp.$1.length+"})");
+        }else{
+          fmt = fmt.replace(RegExp.$1,"\\d{"+RegExp.$1.length+"}");
+        }
+      }
+    }
+    if(new RegExp(fmt).test(time)&&RegExp.$1!=''){
+      data[k] = parseInt(RegExp.$1);
+    }else{
+      data[k] = 0;
+    }
+  }
+  return new Date(data.year,data.month,data.day,data.hour,data.minute,data.second,data.msecond);
+}
+
 // 对Date的扩展，将 Date 转化为指定格式的String
 // 月(M)、日(d)、小时(h)、分(m)、秒(s)、季度(q) 可以用 1-2 个占位符， 
 // 年(y)可以用 1-4 个占位符，毫秒(S)只能用 1 个占位符(是 1-3 位的数字) 

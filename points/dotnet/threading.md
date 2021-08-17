@@ -1,5 +1,14 @@
 # 多线程
 
+## 线程
+
+### Threading
+
+>ThreadStart
+
+>ParameterizedThreadStart
+
+
 ## 线程同步
 
 ### Lock
@@ -47,6 +56,49 @@ finally {
 ```
 
 多线程读取文件的时候，需要设置`FileShare.Read`,否则会发生文件占用异常，当线程获取写锁时，其他线程将会阻塞，无法获取到读锁和写锁，保证写入的安全。
+
+`EnterUpgradeableReadLock`进入可升级读锁，可升级读锁能在里面可以使用`EnterWriteLock`方法来升级读锁为写锁，这个操作是原子级别的操作，也就是当多个读锁升级为写锁时只有一个成功
+
+可升级锁比较常用的场景为如果不能存在则新增
+
+```csharp
+rwl.EnterUpgradeableReadLock();
+try
+{
+    JobEventInfo eventinfo = NiagaraConfigContext.JobEventInfos.OrderByDescending(m => m.Time).FirstOrDefault();
+    if (eventinfo == null)
+    {
+        // 如果不存在时，需要进行写入操作
+        // 原子操作升级读锁为写锁
+        rwl.EnterWriteLock();
+        try
+        {
+            // 可能会多个线程请求升级锁为写锁，这时候只有一个线程获取到写锁，在写入后，其他等待的线程会获取到写锁，这时候需要重新判断JobEventInfos表是否有数据
+            eventinfo = NiagaraConfigContext.JobEventInfos.OrderByDescending(m => m.Time).FirstOrDefault();
+            if (eventinfo == null) {
+                eventinfo = new JobEventInfo()
+                {
+                    Time = DateTime.Now,
+                };
+                NiagaraConfigContext.JobEventInfos.Add(eventinfo);
+                await NiagaraConfigContext.SaveChangesAsync();
+            }
+        }
+        finally
+        {
+            rwl.ExitWriteLock();
+        }
+
+    }
+    return eventinfo;
+}
+finally
+{
+    rwl.ExitUpgradeableReadLock();
+}
+
+```
+
 ### Monitor 
 
 lock 操作会编译为Monitor，直接使用Monitor会更灵活一点，包括有超时操作等，
@@ -194,3 +246,7 @@ public static class Interlocked
 ### 线程同步类
 
 在命名空间`System.Collections.Concurrent;`下
+
+### 其他
+
+>SpinWait
