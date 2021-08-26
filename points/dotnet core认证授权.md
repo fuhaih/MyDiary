@@ -2,6 +2,14 @@
 
 在dotnet core中，无论哪种认证，都会解析为`ClaimsPrincipal`对象，然后赋值给HttpContext.User
 
+>Claims、ClaimsIdentity、 ClaimsPrincipal
+
+Claims是身份信息，一个Cliams对应用户的一个信息项，如用户名。
+
+ClaimsIdentity包含了一个用户的某个身份的所有信息项，相当于一个身份证件。
+
+ClaimsPrincipal是一个用户的所有身份信息，可以包含n个ClaimsIdentity。
+
 >cookie 
 
 cookie认证也是构建一个`ClaimsPrincipal`对象，然后使用HttpContext.SignInAsync方法来进行登录操作，HttpContext.SignOutAsync进行登出操作
@@ -139,3 +147,7 @@ public ActionResult Index()
 ## 自定义认证
 
 IAuthenticationHandler，IAuthorizationService
+
+## 理解
+
+AddCookie其实就是向服务中注册Cookie处理相关的IAuthenticationHandler，AddJwtBearer也是同理，目前AddCookie中如果判断没有登录，会跳转到配置的登录页面中，而AddJwtBearer是返回401状态码，所以如果是api接口用cookie认证的话，最后是要重写IAuthenticationHandler，因为api接口一般都是返回状态码，而不是进行跳转

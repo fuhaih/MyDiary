@@ -1133,5 +1133,9 @@ ISession
 
 ## filter
 
-## 动态代理(AspectCore) 
+## 动态代理(AspectCore)
+
+# websocket
+
+dotnet 中的websocket是使用原有的http管道的，所以和http请求挂钩，由http请求升级为websocket，当请求结束时，websocket会关闭，所以如果需要保持连接，需要保证请求管道一直运行着，直到客户端关闭时再关闭管道。
 
