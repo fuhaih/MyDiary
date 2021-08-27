@@ -400,6 +400,78 @@ class WorkerWithTimer
 }
 ```
 
+>TaskCompletionSource<T> 使用
+
+这个是用来把一些功能改造为异步程序的。
+
+有些功能是使用回调来进行异步处理数据，
+
+比如socket的iocp完成端口功能，就是使用的回调函数进行异步处理，当需要发送数据时确认发送完成，可以使用TaskCompletionSource<T>来实现
+
+```csharp
+public Task<int> SendAsync(byte[] buffer)
+{
+    ResetEvent.WaitOne(3000);
+    if (!socket.Connected) {
+        throw new Exception("socket已断开连接");
+    }
+    //CancellationTokenSource source = new CancellationTokenSource();
+    TaskCompletionSource<int> source = new TaskCompletionSource<int>();
+    sendEvent.UserToken = source;//sendEvent 是一个SocketAsyncEventArgs对象
+    sendEvent.SetBuffer(buffer, 0, buffer.Length);
+    bool send = socket.SendAsync(sendEvent); 
+    if (!send) {
+        ProcessSend(sendEvent);
+    }
+    return source.Task;
+}
+//这个是SendAsync完成后的回调函数，在sendEvent.Completed += IO_Completed;
+protected void IO_Completed(object sender, SocketAsyncEventArgs e)
+{
+    switch (e.LastOperation)
+    {
+        case SocketAsyncOperation.Receive:
+            ProcessReceive(e);
+            break;
+        case SocketAsyncOperation.Send:
+            ProcessSend(e);
+            break;
+        case SocketAsyncOperation.Connect:
+            
+            StartReceiveData(e);
+            break;
+        default:
+            throw new ArgumentException("The last operation completed on the socket was not a receive or send");
+    }
+}
+private void ProcessSend(SocketAsyncEventArgs e)
+{
+    if (e.SocketError != SocketError.Success)
+    {
+        ReleseSource(e.UserToken,true);
+        CloseSocket();
+    }
+    else {
+        ReleseSource(e.UserToken);
+    }
+}
+private void ReleseSource(object token,bool error= false) {
+    if (token is TaskCompletionSource<int>)
+    {
+        TaskCompletionSource<int> source = token as TaskCompletionSource<int>;
+        if (error)
+        {
+            source.SetException(new Exception("socket 已关闭"));
+        }
+        else {
+            //通过SetResult使得任务完成
+            source.SetResult(1);
+        }
+    }
+}
+```
+
+
 > Task.run 和Task.Factory.StartNew区别
 
 Task.Factory.StartNew能比较精确的控制任务，例如需要设置TaskCreationOptions和TaskScheduler的时候，可以使用Task.Factory.StartNew来创建Task

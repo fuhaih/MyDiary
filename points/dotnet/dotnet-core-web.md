@@ -796,7 +796,7 @@ public class IndexModel : PageModel
 
 ### 3.2.6 TypeFilterAttribute
 
-和ServiceFilter类似，但不是使用容器来构造对象
+和ServiceFilter类似，但是会每个请求都构建一个对象，这样开销比较大
 
 ```csharp
 [TypeFilter(typeof(LogConstantFilter),
