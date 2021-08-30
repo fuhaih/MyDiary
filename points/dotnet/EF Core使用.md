@@ -50,6 +50,27 @@ PM>
 ```
 
 >数据库
+```csharp
+public class Book
+{
+    public int ID { get; set; }
+    public string Title { get; set; }
+    public Author FirstAuthor { get; set; }
+}
+
+public class Author
+{
+    public int ID { get; set; }
+    public string Name { get; set; }
+    public virtual ICollection<Book> Books{ get; set; }
+}
+```
+
+Book.FirstAuthor是引用导航
+
+Author.Books是集合导航
+
+Book.FirstAuthor 是 (Author.Books的反向导航属性，反之亦然)
 
 ![test](./images/efcore1.jpg)
 

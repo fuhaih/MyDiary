@@ -1,0 +1,24 @@
+        /// <summary>
+        /// 新增JobEventInfo,并保存到数据库中
+        /// 在配置库，SaveConfigChange进行保存
+        /// </summary>
+        /// <returns></returns>
+        public async Task<JobEventInfo> AddAndSaveJobEventInfo()
+        {
+            rwl.EnterWriteLock();
+            try
+            {
+                // 可能会多个线程请求升级锁为写锁，这时候只有一个线程获取到写锁，在写入后，其他等待的线程会获取到写锁，这时候需要重新判断JobEventInfos表是否有数据
+                JobEventInfo eventinfo = new JobEventInfo()
+                {
+                    Time = DateTime.Now,
+                };
+                NiagaraConfigContext.JobEventInfos.Add(eventinfo);
+                NiagaraConfigContext.SaveChanges();//await NiagaraConfigContext.SaveChangesAsync()是异步方法，不要在锁范围内使用异步
+                return eventinfo;
+            }
+            finally
+            {
+                rwl.ExitWriteLock();
+            }
+        }
