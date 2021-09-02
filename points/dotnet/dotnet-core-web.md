@@ -872,12 +872,95 @@ public async Task<IActionResult> QueryFormData([FromForm] UserFile user)
 
 ## 4.5 自定义参数绑定
 
+```csharp
+
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Enum | AttributeTargets.Property | AttributeTargets.Parameter, AllowMultiple = false, Inherited = true)]
+public class ModelBinderAttribute : Attribute, IBinderTypeProviderMetadata, IBindingSourceMetadata, IModelNameProvider
+{
+    public ModelBinderAttribute();
+    public ModelBinderAttribute(Type binderType);
+    public Type BinderType { get; set; }
+    public virtual BindingSource BindingSource { get; protected set; }
+    public string Name { get; set; }
+}
+
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter, AllowMultiple = false, Inherited = true)]
+public class FromFormAttribute : Attribute, IBindingSourceMetadata, IModelNameProvider
+{
+    public FromFormAttribute();
+
+    public BindingSource BindingSource { get; }
+    public string Name { get; set; }
+}
+
+public interface IBindingSourceMetadata
+{
+    BindingSource BindingSource { get; }
+}
+[DebuggerDisplay("Source: {DisplayName}")]
+public class BindingSource : IEquatable<BindingSource>
+{
+    public static readonly BindingSource Body;
+    public static readonly BindingSource Custom;
+    public static readonly BindingSource Form;
+    public static readonly BindingSource FormFile;
+    public static readonly BindingSource Header;
+    public static readonly BindingSource ModelBinding;
+    public static readonly BindingSource Path;
+    public static readonly BindingSource Query;
+    public static readonly BindingSource Services;
+    public static readonly BindingSource Special;
+    public BindingSource(string id, string displayName, bool isGreedy, bool isFromRequest);
+    public string DisplayName { get; }
+    public string Id { get; }
+    public bool IsFromRequest { get; }
+    public bool IsGreedy { get; }
+    public virtual bool CanAcceptDataFrom(BindingSource bindingSource);
+    public bool Equals(BindingSource other);
+    public override bool Equals(object obj);
+    public override int GetHashCode();
+
+    public static bool operator ==(BindingSource s1, BindingSource s2);
+    public static bool operator !=(BindingSource s1, BindingSource s2);
+}
+
+```
+
+从上面源码可以看出[ModelBinder]和[FromForm]都实现了`IBindingSourceMetadata`接口，
+
 ## 4.6 modelstate
 
 ### ModelBinderProvider、BindingSourceValueProvider、IInputFormatters
 
+数据源：
+
 `BindingSourceValueProvider` 解析参数值
 
+
+```csharp
+public interface IValueProvider
+{
+    bool ContainsPrefix(string prefix);
+    ValueProviderResult GetValue(string key);
+}
+public abstract class BindingSourceValueProvider : IBindingSourceValueProvider, IValueProvider
+{
+    public BindingSourceValueProvider(BindingSource bindingSource);
+    protected BindingSource BindingSource { get; }
+    public abstract bool ContainsPrefix(string prefix);
+    public virtual IValueProvider Filter(BindingSource bindingSource);
+    public abstract ValueProviderResult GetValue(string key);
+}
+public class FormValueProvider : BindingSourceValueProvider, IEnumerableValueProvider, IValueProvider
+{
+    public FormValueProvider(BindingSource bindingSource, IFormCollection values, CultureInfo culture);
+    public CultureInfo Culture { get; }
+    protected PrefixContainer PrefixContainer { get; }
+    public override bool ContainsPrefix(string prefix);
+    public virtual IDictionary<string, string> GetKeysFromPrefix(string prefix);
+    public override ValueProviderResult GetValue(string key);
+}
+```
 
 `ModelBinderProvider` 把参数值绑定到参数中
 
