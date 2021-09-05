@@ -69,3 +69,4 @@
         }
 
 receive方法await socket.ReceiveAsync(buffer, CancellationToken.None)执行完后需要获取上下文来执行后续代码，但是上下文在主线程中，所以导致这里会一直被阻塞
+ 这里研究一下每个地方的线程id是多少
