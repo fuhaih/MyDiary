@@ -18,6 +18,41 @@
 ```vim shell
 [root@izm5e944c3bh8eikqxjle5z ~]# systemctl enable docker.service
 ```
+## docker file
+
+```
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS runtime
+WORKDIR /app
+COPY ./published ./
+ENV ASPNETCORE_ENVIRONMENT=Production ASPNETCORE_PATHBASE=/hk
+RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+RUN echo 'Asia/Shanghai' >/etc/timezone
+ENTRYPOINT ["dotnet", "HongKouEnergyPlatform.dll"]
+```
+
+docker是分层的，dockerfile中每个命令都是一层，这里是直接发布编译好的dll的，也可以直接拷贝源代码，使用dockerfile编译再发布
+
+```
+FROM microsoft/dotnet:2.1-aspnetcore-runtime AS base
+WORKDIR /app
+EXPOSE 6606/tcp
+
+FROM microsoft/dotnet:2.1-sdk AS build
+WORKDIR /src
+COPY Host/FHCore.MVC/FHCore.MVC.csproj Host/FHCore.MVC/
+RUN dotnet restore Host/FHCore.MVC/FHCore.MVC.csproj
+COPY . .
+RUN dotnet build Host/FHCore.MVC/FHCore.MVC.csproj -c Release -o /app
+
+FROM build AS publish
+COPY Host/FHCore.MVC/layui /app/layui
+RUN dotnet publish Host/FHCore.MVC/FHCore.MVC.csproj -c Release -o /app
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app .
+ENTRYPOINT dotnet FHCore.MVC.dll
+```
 
 ## 创建一个新的容器并运行
 **语法:** docker run [OPTIONS] IMAGE [COMMAND] [ARG...]   
@@ -37,6 +72,21 @@
 > -p [port:port] 端口映射
 
 > -it 交互
+
+> -v 卷映射
+
+
+容器相当于一个运行着的镜像，当重新docker run之后，就相当于新创建了一个容器，这时候之前容器的数据将会消失，所以一些需要存储的数据应该不要放在容器里。
+
+比如说一些日志文件和一些其他文件等，不能放在容器里，应该通过-v映射到实体机上。
+
+> --network 网络模式 
+
+  >> none
+  >> host 宿主机的网络，这个一般要用到宿主机资源时候才这样做，但是安全性没有桥接网络好，因为网络没有隔离。
+  >> Bridge 桥接模式，默认的模式，相当于宿主机创建了一个子网络，每个容器一个子网ip。
+
+
 ```shell
 [root@izm5e944c3bh8eikqxjle5z ~]# docker run -d --restart always -p 6606:6606 --name firstweb fuhai/firstweb:1.0
 ```
@@ -71,8 +121,15 @@
 ```
 ## 查看容器日志
 ```vim shell
-[root@izm5e944c3bh8eikqxjle5z ~]# docker logs -f <CONTAINER ID>
+[root@izm5e944c3bh8eikqxjle5z ~]# docker logs -f --tail 500 <CONTAINER ID>
 ```
+-f : 跟踪日志输出
+
+--since :显示某个开始时间的所有日志
+
+-t : 显示时间戳
+
+--tail :仅列出最新N条容器日志
 
 ## 删除所有容器
 ```vim shell
