@@ -19,5 +19,7 @@ order by Nonce
 
 **可以再进行优化**:CreateTime和Section两个查询条件只需要用到Nonce值，可以创建一个包含索引。
 
+使用包含索引之后，查询速度有所提高，因为包含列是Nonce，所以在查询时应该尽量Top 60 Nonce或者Count(Nonce) 这样具体到Nonce列，因为Nonce值已经在包含索引的索引里了，直接可以获取到，而不用再去聚集索引里查找列值。
+
 3、进行TOP查询的时候要主要order by
 
