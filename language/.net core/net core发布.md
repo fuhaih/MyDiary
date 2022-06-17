@@ -146,6 +146,8 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
+调试状态下`launchSettings.json`文件配置的url要和`Kestrel`中配置的url一致，才能够在调试时跳转到浏览器
+
 ## 关于程序配置文件路径问题
 
 ## 开放端口号

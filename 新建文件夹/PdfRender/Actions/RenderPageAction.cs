@@ -1,0 +1,114 @@
+﻿using PDFiumCore;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace SR.HDIS.Shared.Models.PdfRender.Actions
+{
+    /// <summary>
+    /// 页面绘制操作
+    /// </summary>
+    internal class RenderPageAction
+    {
+        public readonly FpdfPageT _pageInstance;
+        private readonly float _scale;
+        private readonly RectangleF _viewport;
+        private readonly RenderFlags _flags;
+        private readonly Color? _backgroundColor;
+        private readonly bool _includeAlpha;
+        private readonly CancellationToken _cancellationToken;
+        private FpdfBitmapT _bitmap;
+
+        public RenderPageAction(
+            FpdfPageT pageInstance,
+            float scale,
+            RectangleF viewport,
+            RenderFlags flags,
+            Color? backgroundColor,
+            bool includeAlpha,
+            CancellationToken cancellationToken)
+        {
+            _pageInstance = pageInstance;
+            _scale = scale;
+            _viewport = viewport;
+            _flags = flags;
+            _backgroundColor = backgroundColor;
+            _includeAlpha = includeAlpha;
+            _cancellationToken = cancellationToken;
+        }
+
+        public PdfBitmap Execute()
+        {
+            try
+            {
+                _cancellationToken.ThrowIfCancellationRequested();
+
+                _bitmap = fpdfview.FPDFBitmapCreateEx(
+                    (int)_viewport.Size.Width,
+                    (int)_viewport.Size.Height,
+                    (int)(_includeAlpha ? FPDFBitmapFormat.BGRA : FPDFBitmapFormat.BGR),
+                    IntPtr.Zero,
+                    0);
+
+                if (_bitmap == null)
+                    throw new Exception("failed to create a bitmap object");
+
+                _cancellationToken.ThrowIfCancellationRequested();
+
+                if (_backgroundColor.HasValue)
+                {
+                    fpdfview.FPDFBitmapFillRect(
+                        _bitmap, 0, 0, (int)_viewport.Size.Width, (int)_viewport.Size.Height, (uint)_backgroundColor.Value.ToArgb());
+
+                    _cancellationToken.ThrowIfCancellationRequested();
+                }
+
+                // |          | a b 0 |
+                // | matrix = | c d 0 |
+                // |          | e f 1 |
+                using var matrix = new FS_MATRIX_();
+                using var clipping = new FS_RECTF_();
+
+                matrix.A = _scale;
+                matrix.B = 0;
+                matrix.C = 0;
+                matrix.D = _scale;
+                matrix.E = -_viewport.X;
+                matrix.F = -_viewport.Y;
+
+                clipping.Left = 0;
+                clipping.Right = _viewport.Size.Width;
+                clipping.Bottom = 0;
+                clipping.Top = _viewport.Size.Height;
+
+                fpdfview.FPDF_RenderPageBitmapWithMatrix(_bitmap, _pageInstance, matrix, clipping, (int)_flags);
+
+                // Cancellation check;
+                _cancellationToken.ThrowIfCancellationRequested();
+
+                return new PdfBitmap(
+                    _bitmap,
+                    (int)_viewport.Size.Width,
+                    (int)_viewport.Size.Height,
+                    _includeAlpha ? PixelFormat.Format32bppArgb : PixelFormat.Format24bppRgb,
+                    _scale,
+                    _viewport);
+            }
+            catch (OperationCanceledException)
+            {
+                fpdfview.FPDFBitmapDestroy(_bitmap);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                fpdfview.FPDFBitmapDestroy(_bitmap);
+                throw new Exception("Error rendering page. Check inner exception.", ex);
+            }
+        }
+    }
+}
