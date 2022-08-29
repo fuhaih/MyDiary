@@ -110,7 +110,7 @@ BinaryExpression indexExpr = Expression.ArrayIndex(variableExpr, Expression.Cons
 
 //代码块 {} 如果有返回值，最后一个Expression作为返回值
 Expression blockExpr = Expression.Block(
-new ParameterExpression[] { variableExpr },
+new ParameterExpression[] { variableExpr },//这里把变量定义好，块中需要先定义好变量
     assignExpr,
     indexExpr
 );

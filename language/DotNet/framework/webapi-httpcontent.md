@@ -25,8 +25,9 @@ else {
 
 ```csharp
 string data = JsonConvert.SerializeObject(parameter);
-var content = new StringContent(data);
-content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+//var content = new StringContent(data);
+//content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+var content = new StringContent(JsonConvert.SerializeObject(rtu),Encoding.UTF8,Application.Json);
 var respon = await client.PostAsync(url, content);
 ```
 

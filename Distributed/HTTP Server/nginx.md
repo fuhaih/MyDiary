@@ -526,5 +526,14 @@ client_body_temp_path /etc/nginx/proxy_temp;
 
 可以配置在`http`、`server`、`location`这几个节点，区别就是作用的范围。
 
+> 关于module
 
+在configure配置的时候可以配置为dynamic
+
+./configure --with-http_image_filter_module=dynamic
+
+这时候进行make install编译安装，会把模块单独生成为ngx_http_image_filter_module.so文件，放在modules文件夹下
+
+然后在nginx.conf 中可以通过load_module "xxx/ngx_http_image_filter_module.so";
+进行模块的加载
 

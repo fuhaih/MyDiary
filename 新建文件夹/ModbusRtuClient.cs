@@ -66,8 +66,11 @@ namespace SR.WorkSchedule.Net.Modbus
         /// <summary>
         /// 读取保持寄存器
         /// </summary>
+        /// <param name="slaveId">从机地址</param>
+        /// <param name="address">地址</param>
+        /// <param name="quantity">参数数量(地址数量)</param>
         /// <returns></returns>
-        public async Task ReadHoldingRegisters(Int16 slaveId, Int16 address, Int16 quantity)
+        public async Task ReadHoldingRegistersAsync(Int16 slaveId, Int16 address, Int16 quantity)
         {
             await SendReadInstructionsAsync(slaveId,ModbusCommandCode.ReadHoldingRegisters,address, quantity);
         }
@@ -75,9 +78,10 @@ namespace SR.WorkSchedule.Net.Modbus
         /// <summary>
         /// 发送读指令
         /// </summary>
+        /// <param name="slaveId">从机地址</param>
         /// <param name="code">功能码</param>
         /// <param name="address">地址</param>
-        /// <param name="number">参数数量(地址数量)</param>
+        /// <param name="quantity">参数数量(地址数量)</param>
         /// <returns></returns>
         public async Task SendReadInstructionsAsync(Int16 slaveId, ModbusCommandCode code,Int16 address,Int16 quantity)
         {
@@ -128,10 +132,14 @@ namespace SR.WorkSchedule.Net.Modbus
             //richTextBoxResult.Text = code;
             serialPort.Write(bytes, 0, bytes.Length);
             Task result =await Task.WhenAny(_taskCompletion.Task,Task.Delay(1000));
-            
+
             if (result != _taskCompletion.Task)
             {
                 throw new TimeoutException($"串口{serialPort.PortName}地址{address}读取超时");
+            }
+            else {
+                //如果是_taskCompletion先完成，返回完成结果，包括异常信息
+                await _taskCompletion.Task;
             }
         }
 
@@ -176,8 +184,10 @@ namespace SR.WorkSchedule.Net.Modbus
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.StackTrace);
+                if (_taskCompletion != null && !_taskCompletion.Task.IsCompleted)
+                { 
+                    _taskCompletion.TrySetException(ex);
+                }
             }
         }
 
@@ -189,34 +199,54 @@ namespace SR.WorkSchedule.Net.Modbus
             if (!_taskCompletion.Task.IsCompleted && serialPort.IsOpen && serialPort.BytesToRead > 0&& readCount>0)
             {
                 //Buffer = new byte[serialPort.BytesToRead];
-
                 readCount = readCount > serialPort.BytesToRead ? serialPort.BytesToRead : readCount;
                 serialPort.Read(Buffer, Position, readCount);
                 Position += readCount;
-                if (Position >= Buffer.Length)
+
+                byte[] headBytes = Buffer.Take(2).ToArray();
+                var header = BitConverter.ToUInt16(headBytes);
+                var slaveId = (Int16)(header & 0xff);
+                var function = header >> 8;
+                //查看操作码是否一致，不一致说明返回异常码
+                if (function != (int)CommandCode)
                 {
-                    byte[] crcBytes = Buffer.TakeLast(2).ToArray();
-                    UInt16 crcValue = BitConverter.ToUInt16(crcBytes);
-                    UInt16 calCrcValue = Buffer.CalculateCrc(Buffer.Length - 2);
-                    if (crcValue != calCrcValue)
+                    // 异常操作码在第二位，异常代码在第三位，第四第五位是crc校验信息
+                    if (Position >= 5)
+                    {
+                        if (!CheckCrc(3))
+                        {
+                            _taskCompletion.TrySetException(new Exception("crc校验异常"));
+                        }
+                        byte[] errorBytes = new byte[2];
+                        errorBytes[0] = Buffer.Skip(2).Take(1).FirstOrDefault();
+                        errorBytes[1] = 0;
+                        int error = BitConverter.ToUInt16(errorBytes);
+                        var errorCodes = (ModbusExceptionCode?)error;
+                        var errorInfo = errorCodes == null ? "未知异常" : errorCodes.ToString();
+                        _taskCompletion.TrySetException(new Exception($"操作异常，功能码{(int)CommandCode}，异常功能码{function},异常码{error},异常信息{errorInfo}"));
+                    }
+                }
+                else if (Position >= Buffer.Length)
+                {
+                    if (!CheckCrc(Buffer.Length - 2))
                     {
                         _taskCompletion.TrySetException(new Exception("crc校验异常"));
-                    }
-                    byte[] headBytes = Buffer.Take(2).ToArray();
-                    var header = BitConverter.ToUInt16(headBytes);
-                    var slaveId = (Int16)(header & 0xff);
-                    var function = header >> 8;
-                    if (function != (int)CommandCode)
-                    {
-                        byte[] errorBytes = new byte[2];
-                        errorBytes[0] = 0;
-                        errorBytes[1] = Buffer.Skip(2).Take(1).FirstOrDefault();
-                        int error = BitConverter.ToUInt16(errorBytes);
-                        _taskCompletion.TrySetException(new Exception($"操作异常，异常功能码{function},异常码{error}"));
                     }
                     _taskCompletion.TrySetResult();
                 }
             }
+        }
+
+        /// <summary>
+        /// crc校验,传入校验码开始下标，校验码占用两个字符，计算校验码是使用校验码之前的所有数据进行计算
+        /// </summary>
+        /// <param name="startIndex">校验码开始下标，校验码占用两个字符</param>
+        /// <returns></returns>
+        private bool CheckCrc(int startIndex)
+        {
+            UInt16 crcValue = BitConverter.ToUInt16(Buffer, startIndex);
+            UInt16 calCrcValue = Buffer.CalculateCrc(startIndex);
+            return crcValue == calCrcValue;
         }
 
         protected virtual void Dispose(bool disposing)
@@ -229,9 +259,9 @@ namespace SR.WorkSchedule.Net.Modbus
                 }
                 if (serialPort!=null&&serialPort.IsOpen)
                 {
-                    //serialPort的bug,请求结束时把DataReceived去掉，并关闭串口
+                    //serialPort的bug,请求结束时不要调用Dispose方法，并且仔细处理DataReceived回调函数
                     //否则会出现异常 https://github.com/dotnet/runtime/issues/44952
-                    
+
                     serialPort.Close();
                 }
                 // TODO: 释放未托管的资源(未托管的对象)并重写终结器

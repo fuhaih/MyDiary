@@ -2,7 +2,13 @@
 
 用来验证，一般是存放token
 
->Content-Type
+>Content-Type、Content-Disposition
+
+请求都会携带有Content-Type
+
+如果是文件下载，Content-Type="application/octet-stream",并且会再携带上`Content-Disposition`头来返回文件名 
+`Content-Type: application/octet-stream
+Content-Disposition: attachment;filename=test.xlsx`
 
 返回数据的类型 [对照表](http://tool.oschina.net/commons/) 
 

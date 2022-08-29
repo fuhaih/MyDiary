@@ -42,6 +42,10 @@
     git pull --rebase/git pull --rebase origin master
     #取回远程主机某个分支的更新，再与本地的指定分支合并
 
+    现在master分支不能使用了，需要使用main分支
+
+    git pull --rebase origin main
+
 ## 进阶
 
 ### **合并Meger**
