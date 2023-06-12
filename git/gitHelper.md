@@ -176,7 +176,7 @@ git push origin master
 ```
 
 
-###关联分支
+### 关联分支
 
 ```s
 git branch --set-upstream-to=origin/dev
@@ -190,4 +190,19 @@ git push xxx master
 git push
 ```
 
+### 远程分支同步
 
+有时候远程分支删除了，但是在vs的git更改里还能看到这些已经删除的分支
+
+可以使用git命令查看远程分支
+
+```git
+git remote show origin
+```
+
+查看后会罗列出远程分支哪些已经删除了
+
+```git
+git remote prune origin
+```
+就会同步远程分支信息

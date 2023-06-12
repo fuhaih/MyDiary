@@ -133,3 +133,9 @@ nuget push DynamicExpression.Core.1.0.2.nupkg -source nuget.org
 发布打包好的包
 
 发布的时候需要到官网先查一下包的名称id是否冲突，如果冲突了是会发布失败的。
+
+携带apikey发布
+
+```
+nuget push SR.Module.Dashboard.0.0.1.nupkg -source http://nuget.senruisoft.com/ -apikey srnugetpublishkey
+```
