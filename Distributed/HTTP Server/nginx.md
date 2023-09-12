@@ -537,3 +537,26 @@ client_body_temp_path /etc/nginx/proxy_temp;
 然后在nginx.conf 中可以通过load_module "xxx/ngx_http_image_filter_module.so";
 进行模块的加载
 
+> 路径配置
+
+```s
+location /swagger/ {
+    proxy_pass http://47.104.238.228:8443;
+}
+```
+跳转到`http://47.104.238.228:8443/swagger`
+
+```s
+location /swagger {
+    proxy_pass http://47.104.238.228:8443/swagger;
+}
+```
+跳转到`http://47.104.238.228:8443/swagger`
+
+```s
+location /swagger {
+    proxy_pass http://47.104.238.228:8443/api;
+}
+```
+跳转到`http://47.104.238.228:8443/api`
+
