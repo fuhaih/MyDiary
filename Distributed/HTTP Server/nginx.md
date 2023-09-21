@@ -544,19 +544,19 @@ location /swagger/ {
     proxy_pass http://47.104.238.228:8443;
 }
 ```
-跳转到`http://47.104.238.228:8443/swagger`
+代理到`http://47.104.238.228:8443/swagger`
 
 ```s
 location /swagger {
     proxy_pass http://47.104.238.228:8443/swagger;
 }
 ```
-跳转到`http://47.104.238.228:8443/swagger`
+代理到`http://47.104.238.228:8443/swagger`
 
 ```s
 location /swagger {
     proxy_pass http://47.104.238.228:8443/api;
 }
 ```
-跳转到`http://47.104.238.228:8443/api`
+代理到`http://47.104.238.228:8443/api`
 
