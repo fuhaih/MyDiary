@@ -300,3 +300,184 @@ namespace SQLParser
     }
 }
 ```
+
+# sql支持
+
+## sql
+
+> ConditionExpr 条件表达式
+
+(>,<,>=,<=,=,in between) 
+
+in 后面可以跟子查询
+
+in (select name from xxx)
+
+> 目标表达式
+
+> 其他
+
+
+## 表达式拆分
+
+> 变量表达式
+
+declare @xxx xxx;
+
+> 赋值表达式
+
+赋值可以是变量，也可以是列，update里面
+
+set @xxx = xxx,@xxx = xxx;
+
+> 列表达式
+
+*，列名，函数，逻辑运算，方法，数值，日期,参数等，还可以是子查询
+
+> 集合对象表达式
+
+表名，视图，表变量，临时表等
+
+> 目标表达式
+
+集合对象表达式|查询表达式|union表达式
+
+> 条件表达式
+
+condition and|or condition
+
+condition = 列表达式 (>,<,>=,<=,=,in between) 列表达式
+
+> order by 表达式
+
+order by 列表达式
+
+> group by 表达式 
+
+group by 列表达式
+
+> having表达式
+
+having condition
+
+> 查询表达式 （能查询出结果的，包括select 和select union select等）
+
+查询表达式 =
+
+select 
+(top/distinct)?
+列表达式(*，列名，函数，逻辑运算，方法，数值，日期,参数等) 别名？
+目标表达式(from xxx 目标表达式也可以是另一个查询表达式或者union表达式或者是表名、视图等)
+join on 表达式(join 一个目标表达式，left join ,inner join cross join 等)
+APPLY 表达式?
+条件表达式(where)
+排序表达式(order by)
+分组表达式(group by 列表达式)
+having表达式
+
+或者
+
+查询表达式 union 查询表达式
+
+
+
+> insert 表达式
+
+insert into 
+集合对象表达式 (列名)?
+values(),()? | 查询表达式
+
+直接给值或者是查询结果
+
+> update 表达式
+
+update
+目标别名？
+目标表达式
+赋值表达式(set xx=xxx)
+join on 表达式(join 一个目标表达式，left join ,inner join cross join 等)
+条件表达式(where)
+
+> delete 表达式
+
+delete
+目标别名？
+目标表达式
+join on 表达式(join 一个目标表达式，left join ,inner join cross join 等)
+条件表达式
+
+> drop 表达式
+
+drop [table/column] [TableName];
+
+> case when condition then 列表达式 end 别名？
+
+> rownumber() 表达式
+
+rownumber() over(partition by 列表达式 order by 列表达式)
+
+这里面的列表达式不能嵌套rownumber表达式，这个得处理下，再做细分
+
+> 类型表达式 
+
+nvarchar()
+
+table(
+	列名 类型，
+	列名 类型
+)
+
+> APPLY 表达式
+
+[OUTER/CROSS] APPLY 查询表达式
+
+OUTER APPLY把一列展开成多列
+
+> ANY/ALL  表达式
+
+> OFFSET FETCH
+
+> NULL
+
+> merge
+
+> transaction
+
+>  CTE (Common Table Expression (CTE))
+
+WITH expression_name (column_list)
+AS
+(
+    -- Anchor member
+    initial_query  
+    UNION ALL
+    -- Recursive member that references expression_name.
+    recursive_query  
+)
+
+> EXCEPT
+
+> EXISTS
+
+> NULLIF
+
+> ROLLUP 
+
+> CUBE
+
+> SELECT INTO 
+
+> GROUPING SETS
+
+> join 关键字
+
+INNER JOIN 、LEFT JOIN、RIGHT JOIN、FULL OUTER JOIN、Self Join、CROSS JOIN
+
+> PIVOT
+
+> OFFSET FETCH
+```sql 
+ORDER BY column_list [ASC |DESC]
+OFFSET offset_row_count {ROW | ROWS}
+FETCH {FIRST | NEXT} fetch_row_count {ROW | ROWS} ONLY
+```
