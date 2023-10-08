@@ -9,6 +9,7 @@
 * 数据库密码复杂度设计，登陆失败锁定
 * pdf转图片
 * 权限控制
+* 重复提交问题解决
 * 数据库文档生成
 * ef 
 双向导航、row_number 和 isConcurrentToken
